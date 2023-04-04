@@ -1,0 +1,50 @@
+import React, { useEffect, useState, useHistory } from "react";
+import { useParams } from "react-router-dom";
+
+export function Signup() {
+    const [username, setUsername] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const handleSubmit = async (event) => {
+        event.preventDefault(); // Prevent default form submission behavior
+        const response = await fetch("https://blog-production-10b2.up.railway.app/users", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ 
+                username, 
+                first_name: firstName,
+                last_name: lastName, 
+                password,
+                confirm_password: confirmPassword,
+            }),
+        });
+        if(response.ok) { // If response is within the range of 200-299 (successful request), then sign up was successful so redirect user to login page
+            window.location.href = "/login";
+        } else {
+            window.location.href = "/sign-up"; // If login was unsuccessful, redirect user back to sign up page
+        }
+    }
+
+    return (
+        <div>
+            <span>Sign Up</span>
+            <form onSubmit={handleSubmit}>
+                <label htmlFor="username">Enter username</label>
+                <input id="username" type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)}></input>
+                <label htmlFor="first-name">Enter first name</label>
+                <input id="first-name" type="text" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)}></input>
+                <label htmlFor="last-name">Enter last name</label>
+                <input id="last-name" type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)}></input>
+                <label htmlFor="password">Enter password</label>
+                <input id="password" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}></input>
+                <label htmlFor="confirm-password">Confirm password</label>
+                <input id="confirm-password" type="password" placeholder="Re-enter password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}></input>
+                <button type="submit">Sign In</button>
+            </form>
+        </div>
+    );
+}

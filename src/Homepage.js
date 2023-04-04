@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 
 export function Homepage() {
-    const [posts, setPosts] = useState([]); // Initialize posts to be an empty array
-    const [usernames, setUsernames] = useState({});
+    const [posts, setPosts] = useState([]); // An array that stores every post
+    const [usernames, setUsernames] = useState({}); // A JavaScript object that stores key-value pairs of user IDs (key) and their associated usernames (value)
 
     useEffect(() => {
         async function fetchPosts() {
@@ -15,7 +15,7 @@ export function Homepage() {
 
     useEffect(() => {
         async function fetchUsernames() {
-            const userIds = posts.map(post => post.user); // Create an array named userIds with all the user values from each post object in the posts array
+            const userIds = posts.map(post => post.user); // Create an array named userIds with all the user IDs from each post object in the posts array
             const usernameMap = {}; // JavaScript object (similar to hashmap) - userId is key, user.username is value
             for(const userId of userIds) {
                 const response = await fetch(`https://blog-production-10b2.up.railway.app/users/${userId}`); // For each userId in the userIds array, fetch the user from the API
@@ -29,20 +29,38 @@ export function Homepage() {
 
     function formatDate(dateString) {
         const date = new Date(dateString); // Create new date object out of input date string
-        const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`; // Format the date and store it in formattedDate
+        const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} at ${date.getHours() % 12}:${date.getMinutes()} ${date.getHours() >= 12 ? "PM" : "AM"}`; // Format the date and store it in formattedDate
         return formattedDate;
     }
 
-    return (
-        <div>
-            {posts.map((post) => (
-                <div key={post._id}>
-                    <span>{post.title}</span>
-                    <span>{post.content}</span>
-                    <span>Posted by {usernames[post.user]} on {formatDate(post.date)}</span>
-                    <span>Likes: {post.likes}</span>
-                </div>
-            ))}
-        </div>
-    );    
+    if(localStorage.getItem("token") !== null) {
+        return (
+            <div>
+                <a href={"/logout"}>Logout</a>
+                {posts.map((post) => (
+                    <div key={post._id}>
+                        <a href={`/posts/${post._id}`}>{post.title}</a>
+                        <span>{post.content}</span>
+                        <span>Posted by {usernames[post.user]} on {formatDate(post.date)}</span>
+                        <span>Likes: {post.likes}</span>
+                    </div>
+                ))}
+            </div>
+        );    
+    } else {
+        return (
+            <div>
+                <a href={"/login"}>Login</a>
+                <a href={"/sign-up"}>Sign Up</a>
+                {posts.map((post) => (
+                    <div key={post._id}>
+                        <a href={`/posts/${post._id}`}>{post.title}</a>
+                        <span>{post.content}</span>
+                        <span>Posted by {usernames[post.user]} on {formatDate(post.date)}</span>
+                        <span>Likes: {post.likes}</span>
+                    </div>
+                ))}
+            </div>
+        );    
+    }
 }
