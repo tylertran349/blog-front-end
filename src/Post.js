@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import jwt_decode from "jwt-decode";
 
 export function Post() {
     const { postId } = useParams(); // Extract post ID from URL parameter
@@ -9,7 +10,7 @@ export function Post() {
     const [commentUsers, setCommentUsers] = useState({}); // Stores key-value pairs of user IDs (key) and username (value)
     const [newComment, setNewComment] = useState("");
     const [numComments, setNumComments] = useState(0);
-    const [postIsLiked, setPostIsLiked] = useState(false);
+    const [postIsLikedBy, setPostIsLikedBy] = useState(false);
 
     useEffect(() => {
         async function fetchPost() {
@@ -53,6 +54,10 @@ export function Post() {
         fetchComments();
     }, [postId, numComments]);
 
+    useEffect(() => {
+        fetchPostIsLikedBy();
+    }, [])
+
     function formatDate(dateString) {
         const date = new Date(dateString); // Create new date object out of input date string
         const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} at ${date.getHours() % 12}:${date.getMinutes()} ${date.getHours() >= 12 ? "PM" : "AM"}`; // Format the date and store it in formattedDate
@@ -78,8 +83,63 @@ export function Post() {
         }
     }
 
-    async function likeButtonHandler(event) {
+    async function fetchPostIsLikedBy() {
+        const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`);
+        const postData = await response.json();
+        setPostIsLikedBy(postData.liked_by);
+        console.log(postData.liked_by);
+    }
 
+    async function likeButtonHandler() {
+        const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`);
+        const postData = await response.json();
+        console.log(postData);
+        console.log("Currently logged in user: " + getLoggedInUser());
+        if(postData.liked_by.includes(getLoggedInUser())) { // If post is already liked by user
+            console.log("Post is already liked by user");
+            let updatedLikedByList = postData.liked_by.filter(item => item !== getLoggedInUser());
+            setPostIsLikedBy(updatedLikedByList);
+            await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({ 
+                    liked_by: updatedLikedByList,
+                }),
+            });
+        } else {
+            console.log("Post is not liked by user")
+            let updatedLikedByList = postData.liked_by.concat(getLoggedInUser());
+            setPostIsLikedBy(updatedLikedByList);
+            await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({ 
+                    liked_by: updatedLikedByList,
+                }),
+            });
+        }
+    }
+
+    function getLoggedInUser() {
+        const token = localStorage.getItem("token");
+        if(!token) {
+            return null;
+        } 
+
+        try {
+            const decodedToken = jwt_decode(token);
+            const user = decodedToken.user._id;
+            return user;
+        } catch(err) {
+            console.error("Error decoding token: " + err);
+            return null;
+        }
     }
 
     if(localStorage.getItem("token") !== null) { // User is logged in
@@ -88,6 +148,7 @@ export function Post() {
                 <span>{post.title}</span>
                 <span>{post.content}</span>
                 <span>Posted by {user.username}</span>
+                <button type="button" onClick={likeButtonHandler}>Like Post</button>
                 <span>Comments</span>
                 <form onSubmit={handleCommentSubmit}>
                     <input id="comment-form" type="text" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></input>
