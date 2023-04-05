@@ -9,6 +9,7 @@ export function Post() {
     const [commentUsers, setCommentUsers] = useState({}); // Stores key-value pairs of user IDs (key) and username (value)
     const [newComment, setNewComment] = useState("");
     const [numComments, setNumComments] = useState(0);
+    const [postIsLiked, setPostIsLiked] = useState(false);
 
     useEffect(() => {
         async function fetchPost() {
@@ -34,10 +35,6 @@ export function Post() {
         async function fetchComments() {
             const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}/comments?$expand=user`); // Fetch list of comments for the post
             const commentIds = await response.json();
-            if(commentIds.length === 0) {
-                console.log("Array is empty");
-                return;
-            }
             const commentRequests = commentIds.map(commentId => fetch(`https://blog-production-10b2.up.railway.app/comments/${commentId}`)); // Create an array of HTTP requests to fetch comment data for each comment using its ID
             const commentResponses = await Promise.all(commentRequests); // Store an array of all the responses from the HTTP requests to fetch comment data for each comment
             const comments = await Promise.all(commentResponses.map(response => response.json())); // Store an array of comment objects
@@ -82,7 +79,7 @@ export function Post() {
     }
 
     async function likeButtonHandler(event) {
-        
+
     }
 
     if(localStorage.getItem("token") !== null) { // User is logged in
@@ -96,6 +93,9 @@ export function Post() {
                     <input id="comment-form" type="text" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></input>
                     <button type="submit">Send Comment</button>
                 </form>
+                <div>
+                    {comments.length === 0 && (<span>There are no comments.</span>)}
+                </div>
                 {comments.map((comment) => {
                     return (
                     <div>
@@ -113,7 +113,10 @@ export function Post() {
                 <span>{post.content}</span>
                 <span>Posted by {user.username}</span>
                 <span>Comments</span>
-                <span>You must be logged in to comment.</span>
+                <span><a href="/login">Login</a> to comment.</span>
+                <div>
+                    {comments.length === 0 && (<span>There are no comments.</span>)}
+                </div>
                 {comments.map((comment) => {
                     return (
                     <div>
