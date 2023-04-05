@@ -34,6 +34,10 @@ export function Post() {
         async function fetchComments() {
             const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}/comments?$expand=user`); // Fetch list of comments for the post
             const commentIds = await response.json();
+            if(commentIds.length === 0) {
+                console.log("Array is empty");
+                return;
+            }
             const commentRequests = commentIds.map(commentId => fetch(`https://blog-production-10b2.up.railway.app/comments/${commentId}`)); // Create an array of HTTP requests to fetch comment data for each comment using its ID
             const commentResponses = await Promise.all(commentRequests); // Store an array of all the responses from the HTTP requests to fetch comment data for each comment
             const comments = await Promise.all(commentResponses.map(response => response.json())); // Store an array of comment objects
@@ -75,6 +79,10 @@ export function Post() {
             event.target.reset(); // Reset form values after new comment gets submitted
             setNumComments(numComments + 1); // Increment numComments by 1 to force fetchComments() to run again
         }
+    }
+
+    async function likeButtonHandler(event) {
+        
     }
 
     if(localStorage.getItem("token") !== null) { // User is logged in
