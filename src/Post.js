@@ -9,7 +9,6 @@ export function Post() {
     const [comments, setComments] = useState([]); // Stores array of comment objects, each containing the comment's data
     const [commentUsers, setCommentUsers] = useState({}); // Stores key-value pairs of user IDs (key) and username (value) for every comment
     const [newComment, setNewComment] = useState("");
-    const [numComments, setNumComments] = useState(0);
 
     useEffect(() => {
         async function fetchPost() {
@@ -30,7 +29,7 @@ export function Post() {
 
     useEffect(() => {
         fetchComments();
-    }, [postId, numComments]);
+    }, [postId]);
 
     useEffect(() => {
         fetchPostIsLikedBy();
@@ -48,7 +47,6 @@ export function Post() {
         const commentRequests = commentIds.map(commentId => fetch(`https://blog-production-10b2.up.railway.app/comments/${commentId}`)); // Create an array of HTTP requests to fetch comment data for each comment using its ID
         const commentResponses = await Promise.all(commentRequests); // Store an array of all the responses from the HTTP requests to fetch comment data for each comment
         const comments = await Promise.all(commentResponses.map(response => response.json())); // Store an array of comment objects
-        setNumComments(comments.length);
         setComments(comments); // Set the comments state to be the array of comment objects
 
         console.log(comments);
@@ -76,8 +74,8 @@ export function Post() {
             }),
         });
         if(response.ok) {
-            event.target.reset(); // Reset form values after new comment gets submitted
-            setNumComments(numComments + 1); // Increment numComments by 1 to force fetchComments() to run again
+            setNewComment(""); // Set newComment to blank string in order to reset text input after form submission
+            fetchComments();
         }
     }
 
@@ -90,8 +88,8 @@ export function Post() {
     async function likeButtonHandler() {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`);
         const postData = await response.json();
-        if(postData.liked_by.includes(getLoggedInUser())) { // If post is already liked by user
-            let updatedLikedByList = postData.liked_by.filter(item => item !== getLoggedInUser());
+        if(postData.liked_by.includes(getLoggedInUser()._id)) { // If post is already liked by user
+            let updatedLikedByList = postData.liked_by.filter(item => item !== getLoggedInUser()._id);
             await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`, {
                 method: "PATCH",
                 headers: {
@@ -104,7 +102,7 @@ export function Post() {
             });
             document.querySelector('#post-like-button').textContent = "Like Post";
         } else {
-            let updatedLikedByList = postData.liked_by.concat(getLoggedInUser());
+            let updatedLikedByList = postData.liked_by.concat(getLoggedInUser()._id);
             await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`, {
                 method: "PATCH",
                 headers: {
@@ -119,6 +117,7 @@ export function Post() {
         }
     }
 
+    // Returns user object of currently logged in user
     function getLoggedInUser() {
         const token = localStorage.getItem("token");
         if(!token) {
@@ -127,8 +126,7 @@ export function Post() {
 
         try {
             const decodedToken = jwt_decode(token);
-            const user = decodedToken.user._id;
-            return user;
+            return decodedToken.user;
         } catch(err) {
             console.error("Error decoding token: " + err);
             return null;
@@ -149,8 +147,8 @@ export function Post() {
     async function likeCommentHandler(event) {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`);
         const commentData = await response.json();
-        if(commentData.liked_by.includes(getLoggedInUser())) { // If post is already liked by user
-            let updatedLikedByList = commentData.liked_by.filter(item => item !== getLoggedInUser());
+        if(commentData.liked_by.includes(getLoggedInUser()._id)) { // If post is already liked by user
+            let updatedLikedByList = commentData.liked_by.filter(item => item !== getLoggedInUser()._id);
             await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`, {
                 method: "PATCH",
                 headers: {
@@ -163,7 +161,7 @@ export function Post() {
             });
             event.target.textContent = "Like Comment";
         } else {
-            let updatedLikedByList = commentData.liked_by.concat(getLoggedInUser());
+            let updatedLikedByList = commentData.liked_by.concat(getLoggedInUser()._id);
             await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`, {
                 method: "PATCH",
                 headers: {
@@ -178,7 +176,6 @@ export function Post() {
         }
     }
 
-    // TODO: Fix delete comment button and its handler
     if(localStorage.getItem("token") !== null) { // User is logged in
         return (
             <div>
@@ -199,7 +196,7 @@ export function Post() {
                     <div>
                         {comment && (<span>{comment.content}</span>)}
                         <span>Posted by {commentUsers[comment.user]} on {formatDate(comment.date)}</span>
-                        {(comment.user === getLoggedInUser()) && (<button onClick={deleteCommentHandler} id={comment._id} type="button">Delete Comment</button>)}
+                        {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button">Delete Comment</button>)}
                         <button type="button" onClick={likeCommentHandler} id={comment._id}>Like Comment</button>
                     </div>
                     )
