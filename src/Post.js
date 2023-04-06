@@ -20,20 +20,18 @@ export function Post() {
     }, [postId]);
 
     useEffect(() => {
-        async function fetchUser() {
-            const response = await fetch(`https://blog-production-10b2.up.railway.app/users/${post.user}`);
-            const user = await response.json();
-            setUser(user);
-        }
-    }, [post]);
+        fetchUser();
+    }, [user]);
+
+    async function fetchUser() {
+        const response = await fetch(`https://blog-production-10b2.up.railway.app/users/${post.user}`);
+        const user = await response.json();
+        setUser(user);
+    }
 
     useEffect(() => {
         fetchComments();
     }, [postId]);
-
-    useEffect(() => {
-        fetchPostIsLikedBy();
-    }, [])
 
     function formatDate(dateString) {
         const date = new Date(dateString); // Create new date object out of input date string
@@ -77,11 +75,6 @@ export function Post() {
             setNewComment(""); // Set newComment to blank string in order to reset text input after form submission
             fetchComments();
         }
-    }
-
-    async function fetchPostIsLikedBy() {
-        const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`);
-        const postData = await response.json();
     }
 
     // TODO: Fix post's like button causing post's title and content to be blank after being clicked on
@@ -181,7 +174,7 @@ export function Post() {
             <div>
                 <span>{post.title}</span>
                 <span>{post.content}</span>
-                <span>Posted by {user.username}</span>
+                <span>Posted by <a href={`/users/${user._id}`}>{user.username}</a></span>
                 <button id="post-like-button" type="button" onClick={likeButtonHandler}>Like Post</button>
                 <span>Comments</span>
                 <form onSubmit={handleCommentSubmit}>
@@ -195,7 +188,7 @@ export function Post() {
                     return (
                     <div>
                         {comment && (<span>{comment.content}</span>)}
-                        <span>Posted by {commentUsers[comment.user]} on {formatDate(comment.date)}</span>
+                        <span>Posted by <a href={`/users/${comment.user}`}>{commentUsers[comment.user]}</a> on {formatDate(comment.date)}</span>
                         {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button">Delete Comment</button>)}
                         <button type="button" onClick={likeCommentHandler} id={comment._id}>Like Comment</button>
                     </div>
@@ -218,7 +211,7 @@ export function Post() {
                     return (
                     <div>
                         <span>{comment.content}</span>
-                        <span>Posted by {commentUsers[comment.user]} on {formatDate(comment.date)}</span>
+                        <span>Posted by <a href={`/users/${comment.user}`}>{commentUsers[comment.user]}</a> on {formatDate(comment.date)}</span>
                     </div>
                     )
                 })}
