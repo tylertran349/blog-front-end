@@ -86,13 +86,14 @@ export function Post() {
         const postData = await response.json();
     }
 
+    // TODO: Fix post's like button causing post's title and content to be blank after being clicked on
     async function likeButtonHandler() {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`);
         const postData = await response.json();
         if(postData.liked_by.includes(getLoggedInUser())) { // If post is already liked by user
             let updatedLikedByList = postData.liked_by.filter(item => item !== getLoggedInUser());
             await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`, {
-                method: "PUT",
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -105,7 +106,7 @@ export function Post() {
         } else {
             let updatedLikedByList = postData.liked_by.concat(getLoggedInUser());
             await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`, {
-                method: "PUT",
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -151,7 +152,7 @@ export function Post() {
         if(commentData.liked_by.includes(getLoggedInUser())) { // If post is already liked by user
             let updatedLikedByList = commentData.liked_by.filter(item => item !== getLoggedInUser());
             await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`, {
-                method: "PUT",
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -164,7 +165,7 @@ export function Post() {
         } else {
             let updatedLikedByList = commentData.liked_by.concat(getLoggedInUser());
             await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`, {
-                method: "PUT",
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${localStorage.getItem("token")}`,
