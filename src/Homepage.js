@@ -37,7 +37,8 @@ export function Homepage() {
         return (
             <div>
                 <a href={"/logout"}>Logout</a>
-                {posts.map((post) => (
+                <a href={"/new-post"}>Create a New Post</a>
+                {posts.filter((post) => post.published).map((post) => (
                     <div key={post._id}>
                         <a href={`/posts/${post._id}`}>{post.title}</a>
                         <span>{post.content}</span>
@@ -52,7 +53,8 @@ export function Homepage() {
             <div>
                 <a href={"/login"}>Login</a>
                 <a href={"/sign-up"}>Sign Up</a>
-                {posts.map((post) => (
+                <a href={"/new-post"}>Create a New Post</a>
+                {posts.filter((post) => post.published).map((post) => (
                     <div key={post._id}>
                         <a href={`/posts/${post._id}`}>{post.title}</a>
                         <span>{post.content}</span>
