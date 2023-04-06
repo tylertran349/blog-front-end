@@ -145,6 +145,38 @@ export function Post() {
         fetchComments();
     }
 
+    async function likeCommentHandler(event) {
+        const response = await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`);
+        const commentData = await response.json();
+        if(commentData.liked_by.includes(getLoggedInUser())) { // If post is already liked by user
+            let updatedLikedByList = commentData.liked_by.filter(item => item !== getLoggedInUser());
+            await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({ 
+                    liked_by: updatedLikedByList,
+                }),
+            });
+            event.target.textContent = "Like Comment";
+        } else {
+            let updatedLikedByList = commentData.liked_by.concat(getLoggedInUser());
+            await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({ 
+                    liked_by: updatedLikedByList,
+                }),
+            });
+            event.target.textContent = "Comment Liked";
+        }
+    }
+
     // TODO: Fix delete comment button and its handler
     if(localStorage.getItem("token") !== null) { // User is logged in
         return (
@@ -167,6 +199,7 @@ export function Post() {
                         {comment && (<span>{comment.content}</span>)}
                         <span>Posted by {commentUsers[comment.user]} on {formatDate(comment.date)}</span>
                         {(comment.user === getLoggedInUser()) && (<button onClick={deleteCommentHandler} id={comment._id} type="button">Delete Comment</button>)}
+                        <button type="button" onClick={likeCommentHandler} id={comment._id}>Like Comment</button>
                     </div>
                     )
                 })}
