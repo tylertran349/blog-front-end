@@ -187,8 +187,8 @@ export function Post() {
                 <span>{post.title}</span>
                 <span>{post.content}</span>
                 <span>Posted by <a href={`/users/${user._id}`}>{user.username}</a></span>
+                {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<a href={`/posts/${postId}/edit`}>Edit Post</a>)}
                 <button id="post-like-button" type="button" onClick={deletePostHandler}>Delete Post</button>
-                {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true)}
                 <span>Comments</span>
                 <form onSubmit={handleCommentSubmit}>
                     <input id="comment-form" type="text" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></input>
