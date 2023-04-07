@@ -11,11 +11,6 @@ export function Post() {
     const [newComment, setNewComment] = useState("");
 
     useEffect(() => {
-        async function fetchPost() {
-            const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`);
-            const post = await response.json();
-            setPost(post);
-        }
         fetchPost();
     }, [postId]);
 
@@ -32,6 +27,12 @@ export function Post() {
     useEffect(() => {
         fetchComments();
     }, [postId]);
+
+    async function fetchPost() {
+        const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`);
+        const post = await response.json();
+        setPost(post);
+    }
 
     function formatDate(dateString) {
         const date = new Date(dateString); // Create new date object out of input date string
@@ -169,13 +170,25 @@ export function Post() {
         }
     }
 
+    async function deletePostHandler(event) {
+        await fetch(`https://blog-production-10b2.up.railway.app/posts/${post._id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
+        window.location.href = "/"; // Redirect user back to home page after they delete the post
+    }
+
     if(localStorage.getItem("token") !== null) { // User is logged in
         return (
             <div>
                 <span>{post.title}</span>
                 <span>{post.content}</span>
                 <span>Posted by <a href={`/users/${user._id}`}>{user.username}</a></span>
-                <button id="post-like-button" type="button" onClick={likeButtonHandler}>Like Post</button>
+                <button id="post-like-button" type="button" onClick={deletePostHandler}>Delete Post</button>
+                {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true)}
                 <span>Comments</span>
                 <form onSubmit={handleCommentSubmit}>
                     <input id="comment-form" type="text" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></input>
