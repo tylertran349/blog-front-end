@@ -9,11 +9,10 @@ export function EditPost() {
 
     useEffect(() => {
         fetchPostData();
-    }, []) // Leave dependency array empty to only run the hook when the component mounts
+    }, []); // Leave dependency array empty to only run the hook when the component mounts
 
     async function fetchPostData() {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`);
-        console.log(response);
         const postData = await response.json();
         setTitle(postData.title);
         setContent(postData.content);
