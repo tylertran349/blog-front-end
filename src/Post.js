@@ -187,7 +187,7 @@ export function Post() {
                 <span>{post.title}</span>
                 <span>{post.content}</span>
                 <span>Posted by <a href={`/users/${user._id}`}>{user.username}</a></span>
-                {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<a href={`/posts/${postId}/edit`}>Edit Post</a>)}
+                {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${postId}/edit`}}>Edit Post</button>)}
                 <button id="post-like-button" type="button" onClick={deletePostHandler}>Delete Post</button>
                 <span>Comments</span>
                 <form onSubmit={handleCommentSubmit}>
@@ -202,6 +202,7 @@ export function Post() {
                     <div>
                         {comment && (<span>{comment.content}</span>)}
                         <span>Posted by <a href={`/users/${comment.user}`}>{commentUsers[comment.user]}</a> on {formatDate(comment.date)}</span>
+                        {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/comments/${comment._id}/edit`}}>Edit Comment</button>)}
                         {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button">Delete Comment</button>)}
                         <button type="button" onClick={likeCommentHandler} id={comment._id}>Like Comment</button>
                     </div>
