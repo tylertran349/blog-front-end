@@ -42,7 +42,7 @@ export function Homepage() {
                     <div key={post._id}>
                         <a href={`/posts/${post._id}`}>{post.title}</a>
                         <span>{post.content}</span>
-                        <span>Posted by {usernames[post.user]} on {formatDate(post.date)}</span>
+                        <span>Posted by <a href={`/users/${post.user}`}>{usernames[post.user]}</a> on {formatDate(post.date)}</span>
                         <span>Likes: {post.likes}</span>
                     </div>
                 ))}
@@ -58,7 +58,7 @@ export function Homepage() {
                     <div key={post._id}>
                         <a href={`/posts/${post._id}`}>{post.title}</a>
                         <span>{post.content}</span>
-                        <span>Posted by {usernames[post.user]} on {formatDate(post.date)}</span>
+                        <span>Posted by <a href={`/users/${post.user}`}>{usernames[post.user]}</a> on {formatDate(post.date)}</span>
                         <span>Likes: {post.likes}</span>
                     </div>
                 ))}
