@@ -8,6 +8,7 @@ import { Logout } from "./Logout";
 import { NewPost } from "./NewPost";
 import { User } from "./User";
 import { EditPost } from "./EditPost";
+import { EditComment } from "./EditComment"
 
 const Router = () => {
   return (
@@ -21,6 +22,7 @@ const Router = () => {
         <Route path="/new-post" element={<NewPost />}></Route>
         <Route path="/users/:userId" element={<User />}></Route>\
         <Route path="/posts/:postId/edit" element={<EditPost />}></Route>
+        <Route path="/comments/:commentId/edit" element={<EditComment />}></Route>
       </Routes>
     </BrowserRouter>
   )
