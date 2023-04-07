@@ -7,6 +7,7 @@ import { Signup } from "./Signup";
 import { Logout } from "./Logout";
 import { NewPost } from "./NewPost";
 import { User } from "./User";
+import { EditPost } from "./EditPost";
 
 const Router = () => {
   return (
@@ -18,7 +19,8 @@ const Router = () => {
         <Route path="/sign-up" element={<Signup />}></Route>
         <Route path="/logout" element={<Logout />}></Route>
         <Route path="/new-post" element={<NewPost />}></Route>
-        <Route path="/users/:userId" element={<User />}></Route>
+        <Route path="/users/:userId" element={<User />}></Route>\
+        <Route path="/posts/:postId/edit" element={<EditPost />}></Route>
       </Routes>
     </BrowserRouter>
   )
