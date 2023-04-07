@@ -16,7 +16,7 @@ export function NewPost() {
             body: JSON.stringify({ 
                 title, 
                 content,
-                published: event.target.published.checked, // If checkbox is checked, it evaluates to true, otherwise, it's false
+                published, // If checkbox is checked, it evaluates to true, otherwise, it's false
             }),
         });
         if(response.ok) { // If response is within the range of 200-299 (successful request), then new blog post was successfully created and redirect to home page
