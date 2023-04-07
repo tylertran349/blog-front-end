@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 export function User() {
     const { userId } = useParams(); // Get userId from URL
     const [posts, setPosts] = useState([]);
+    const [username, setUsername] = useState("");
 
     useEffect(() => {
         async function fetchPosts() {
@@ -15,8 +16,18 @@ export function User() {
         fetchPosts();
     }, [userId]);
 
+    useEffect(() => {
+        async function fetchUsername() {
+            const response = await fetch(`https://blog-production-10b2.up.railway.app/users/${userId}`);
+            const user = await response.json();
+            setUsername(user.username);
+        }
+        fetchUsername();
+    }, []);
+    
     return (
         <div>
+            <span>{username}</span>
             {posts.length === 0 && (<span>This user has no posts.</span>)}
             {posts.filter((post) => post.published).map((post) => (
                 <div key={post._id}>
