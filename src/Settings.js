@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { DeleteConfirmation } from "./DeleteConfirmation";
 
 export function Settings() {
     const { userId } = useParams();
@@ -9,6 +10,7 @@ export function Settings() {
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmNewPassword, setConfirmNewPassword] = useState("");
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
     useEffect(() => {
         fetchUserData();
@@ -64,7 +66,7 @@ export function Settings() {
         }
     }
 
-    async function deleteAccountHandler() {
+    async function deleteAccount() {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/users/${userId}`, {
             method: "DELETE",
             headers: {
@@ -72,15 +74,17 @@ export function Settings() {
                 "Authorization": `Bearer ${localStorage.getItem("token")}`,
             },
         });
-        if(response.ok) { // If account was successfully deleted, redirect user to home page
+        if(response.ok) { // If account was successfully deleted, logout the user by redirecting them to logout page
             window.location.href = "/logout";
         } else {
             window.location.href = `/users/${userId}/edit`; // If user could not be deleted, redirect user back to same page
         }
+        setShowDeleteConfirmation(false);
     }
 
     return (
         <div>
+            {showDeleteConfirmation && (<DeleteConfirmation type="account" onConfirm={deleteAccount} onCancel={() => setShowDeleteConfirmation(false)} />)}
             <span>Change User Settings</span>
             <form onSubmit={handleSettingsChange}>
                 <label htmlFor="username">Enter username</label>
@@ -101,7 +105,7 @@ export function Settings() {
                 <input id="confirmNewPassword" type="password" placeholder="Re-enter new password" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)}></input>
                 <button type="submit">Save</button>
             </form>
-            <button onClick={deleteAccountHandler}>Delete Account</button>
+            <button onClick={() => setShowDeleteConfirmation(true)}>Delete Account</button>
         </div>
     );
 }
