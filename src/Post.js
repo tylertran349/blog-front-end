@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import jwt_decode from "jwt-decode";
+import { DeleteConfirmation } from "./DeleteConfirmation";
 
 export function Post() {
     const { postId } = useParams(); // Extract post ID from URL parameter
@@ -9,6 +10,9 @@ export function Post() {
     const [comments, setComments] = useState([]); // Stores array of comment objects, each containing the comment's data
     const [commentUsers, setCommentUsers] = useState({}); // Stores key-value pairs of user IDs (key) and username (value) for every comment
     const [newComment, setNewComment] = useState("");
+    const [showDeletePostConfirmation, setShowDeletePostConfirmation] = useState(false);
+    const [showDeleteCommentConfirmation, setShowDeleteCommentConfirmation] = useState(false);
+    const [commentToBeDeleted, setCommentToBeDeleted] = useState("");
 
     useEffect(() => {
         fetchPost();
@@ -48,7 +52,6 @@ export function Post() {
         const comments = await Promise.all(commentResponses.map(response => response.json())); // Store an array of comment objects
         setComments(comments); // Set the comments state to be the array of comment objects
 
-        console.log(comments);
         // Fetch usernames for all comments
         const userIds = comments.map(comment => comment.user); // Create an array of all the user IDs for the entire list of comments
         const userRequests = userIds.map(userId => fetch(`https://blog-production-10b2.up.railway.app/users/${userId}`)); // For each user ID, create an array of HTTP requests to fetch user data for each user using their ID
@@ -127,8 +130,13 @@ export function Post() {
         }
     }
 
-    async function deleteCommentHandler(event) {
-        await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`, {
+    function deleteCommentHandler(event) {
+        setCommentToBeDeleted(event.target.id);
+        setShowDeleteCommentConfirmation(true);
+    }
+
+    async function deleteComment(commentId) {
+        await fetch(`https://blog-production-10b2.up.railway.app/comments/${commentId}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
@@ -136,6 +144,8 @@ export function Post() {
             },
         });
         fetchComments();
+        setShowDeleteCommentConfirmation(false);
+        setCommentToBeDeleted("");
     }
 
     async function likeCommentHandler(event) {
@@ -170,7 +180,7 @@ export function Post() {
         }
     }
 
-    async function deletePostHandler(event) {
+    async function deletePost(event) {
         await fetch(`https://blog-production-10b2.up.railway.app/posts/${post._id}`, {
             method: "DELETE",
             headers: {
@@ -178,17 +188,20 @@ export function Post() {
                 "Authorization": `Bearer ${localStorage.getItem("token")}`,
             },
         });
+        setShowDeletePostConfirmation(false);
         window.location.href = "/"; // Redirect user back to home page after they delete the post
     }
 
     if(localStorage.getItem("token") !== null) { // User is logged in
         return (
             <div>
+                {showDeletePostConfirmation && (<DeleteConfirmation type="post" onConfirm={deletePost} onCancel={() => setShowDeletePostConfirmation(false)} />)}
+                {showDeleteCommentConfirmation && (<DeleteConfirmation type="comment" onConfirm={() => deleteComment(commentToBeDeleted)} onCancel={() => setShowDeleteCommentConfirmation(false)} />)}
                 <span>{post.title}</span>
                 <span>{post.content}</span>
                 <span>Posted by <a href={`/users/${user._id}`}>{user.username}</a></span>
                 {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${postId}/edit`}}>Edit Post</button>)}
-                <button id="post-like-button" type="button" onClick={deletePostHandler}>Delete Post</button>
+                <button id="post-like-button" type="button" onClick={() => setShowDeletePostConfirmation(true)}>Delete Post</button>
                 <span>Comments</span>
                 <form onSubmit={handleCommentSubmit}>
                     <input id="comment-form" type="text" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></input>
