@@ -56,6 +56,7 @@ export function Homepage() {
                 <a href={"/logout"}>Logout</a>
                 <a href={`/users/${getLoggedInUser()._id}/settings`}>Settings</a>
                 <a href={"/new-post"}>Create a New Post</a>
+                {posts.length === 0 && (<span>There are no blog posts.</span>)}
                 {posts.filter((post) => post.published).map((post) => (
                     <div key={post._id}>
                         <a href={`/posts/${post._id}`}>{post.title}</a>
@@ -72,6 +73,7 @@ export function Homepage() {
                 <a href={"/login"}>Login</a>
                 <a href={"/sign-up"}>Sign Up</a>
                 <a href={"/new-post"}>Create a New Post</a>
+                {posts.length === 0 && (<span>There are no blog posts.</span>)}
                 {posts.filter((post) => post.published).map((post) => (
                     <div key={post._id}>
                         <a href={`/posts/${post._id}`}>{post.title}</a>
