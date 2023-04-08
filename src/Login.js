@@ -32,6 +32,7 @@ export function Login() {
                 <input id="password" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}></input>
                 <button type="submit">Sign In</button>
             </form>
+            <span>Don't have an account? <a href="/sign-up">Sign Up</a></span>
         </div>
     );
 }
