@@ -53,5 +53,5 @@ export function EditPost() {
                 <button type="submit">Save</button>
             </form>
         </div>
-    )
+    );
 }
