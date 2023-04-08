@@ -44,6 +44,7 @@ export function Signup() {
                 <label htmlFor="confirm-password">Confirm password</label>
                 <input id="confirm-password" type="password" placeholder="Re-enter password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}></input>
                 <button type="submit">Sign In</button>
+                <span>Have an account? <a href="/login">Login</a></span>
             </form>
         </div>
     );
