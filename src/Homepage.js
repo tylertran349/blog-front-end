@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import jwt_decode from "jwt-decode";
 
 export function Homepage() {
     const [posts, setPosts] = useState([]); // An array that stores every post
@@ -33,10 +34,27 @@ export function Homepage() {
         return formattedDate;
     }
 
+    // Returns user object of currently logged in user
+    function getLoggedInUser() {
+        const token = localStorage.getItem("token");
+        if(!token) {
+            return null;
+        } 
+
+        try {
+            const decodedToken = jwt_decode(token);
+            return decodedToken.user;
+        } catch(err) {
+            console.error("Error decoding token: " + err);
+            return null;
+        }
+    }
+
     if(localStorage.getItem("token") !== null) {
         return (
             <div>
                 <a href={"/logout"}>Logout</a>
+                <a href={`/users/${getLoggedInUser()._id}/settings`}>Settings</a>
                 <a href={"/new-post"}>Create a New Post</a>
                 {posts.filter((post) => post.published).map((post) => (
                     <div key={post._id}>
