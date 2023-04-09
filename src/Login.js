@@ -5,7 +5,7 @@ export function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showErrorPopup, setShowErrorPopup] = useState(false);
-    const [errorMessage, setShowErrorMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleSubmit = async (event) => {
         event.preventDefault(); // Prevent default form submission behavior
@@ -22,7 +22,7 @@ export function Login() {
             window.location.href = "/";
         } else {
             const result = await response.json();
-            setShowErrorMessage(result.error);
+            setErrorMessage(result.error);
             setShowErrorPopup(true);
         }
     }
