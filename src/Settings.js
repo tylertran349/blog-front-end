@@ -7,6 +7,7 @@ export function Settings() {
     const [username, setUsername] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
+    const [isAdmin, setIsAdmin] = useState(false);
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmNewPassword, setConfirmNewPassword] = useState("");
@@ -23,6 +24,7 @@ export function Settings() {
         setUsername(userData.username);
         setFirstName(userData.first_name);
         setLastName(userData.last_name);
+        setIsAdmin(userData.is_admin);
     }
 
     async function handleSettingsChange(event) {
@@ -39,11 +41,7 @@ export function Settings() {
                 last_name: lastName, 
             }),
         });
-        if(response.ok) { // If response is within the range of 200-299 (successful request), then redirect user back to the dedicated page for their account
-            window.location.href = `/users/${userId}`;
-        } else {
-            window.location.href = `/users/${userId}/edit`; // If user could not be updated, redirect user back to same page
-        }
+        window.location.href = `/users/${userId}/settings`;
     }
 
     async function handlePasswordChange(event) {
@@ -60,11 +58,7 @@ export function Settings() {
                 confirm_password: confirmNewPassword,
             }),
         });
-        if(response.ok) { // If response is within the range of 200-299 (successful request), then redirect user back to the dedicated page for their account
-            window.location.href = `/users/${userId}`;
-        } else {
-            window.location.href = `/users/${userId}/edit`; // If user could not be updated, redirect user back to same page
-        }
+        window.location.href = `/users/${userId}/settings`;
     }
 
     async function deleteAccount() {
@@ -78,7 +72,7 @@ export function Settings() {
         if(response.ok) { // If account was successfully deleted, logout the user by redirecting them to logout page
             window.location.href = "/logout";
         } else {
-            window.location.href = `/users/${userId}/edit`; // If user could not be deleted, redirect user back to same page
+            window.location.href = `/users/${userId}/settings`; // If user could not be deleted, redirect user back to settings page
         }
         setShowDeleteConfirmation(false);
     }
@@ -95,18 +89,14 @@ export function Settings() {
                 admin_passcode: adminPasscode,
             }),
         });
-        if(response.ok) {
-            window.location.href = `/users/${userId}`;
-        } else {
-            window.location.href = `/users/${userId}/edit`;
-        }
+        window.location.href = `/users/${userId}/settings`;
     }
 
     return (
         <div>
             {showDeleteConfirmation && (<DeleteConfirmation type="account" onConfirm={deleteAccount} onCancel={() => setShowDeleteConfirmation(false)} />)}
-            <span>Change User Settings</span>
             <form onSubmit={handleSettingsChange}>
+                <span>Change User Settings</span>
                 <label htmlFor="username">Enter username</label>
                 <input id="username" type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)}></input>
                 <label htmlFor="firstName">Enter first name</label>
@@ -115,8 +105,8 @@ export function Settings() {
                 <input id="lastName" type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)}></input>
                 <button type="submit">Save</button>
             </form>
-            <span>Change Password</span>
             <form onSubmit={handlePasswordChange}>
+                <span>Change Password</span>
                 <label htmlFor="oldPassword">Enter current password</label>
                 <input id="oldPassword" type="password" placeholder="Current pasword" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)}></input>
                 <label htmlFor="newPassword">Enter new password</label>
@@ -125,12 +115,15 @@ export function Settings() {
                 <input id="confirmNewPassword" type="password" placeholder="Re-enter new password" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)}></input>
                 <button type="submit">Save</button>
             </form>
-            <span>Become an Admin</span>
-            <form onSubmit={changeAdminStatus}>
-                <label htmlFor="adminPasscode">Enter admin passcode</label>
-                <input id="adminPasscode" type="password" placeholder="Admin passcode" value={adminPasscode} onChange={(e) => setAdminPasscode(e.target.value)}></input>
-                <button type="submit">Submit passcode</button>
-            </form>
+            {isAdmin && (<span>You are already an admin.</span>)}
+            {!isAdmin && (
+                <form onSubmit={changeAdminStatus}>
+                    <span>Become an Admin</span>
+                    <label htmlFor="adminPasscode">Enter admin passcode</label>
+                    <input id="adminPasscode" type="password" placeholder="Admin passcode" value={adminPasscode} onChange={(e) => setAdminPasscode(e.target.value)}></input>
+                    <button type="submit">Submit passcode</button>
+                </form>
+            )}
             <button onClick={() => setShowDeleteConfirmation(true)}>Delete Account</button>
         </div>
     );
