@@ -29,16 +29,16 @@ export function Signup() {
             window.location.href = "/login";
         } else {
             const result = await response.json();
-                let errorText = "";
-                if(result.errors) {
-                    for(let i = 0; i < result.errors.length; i++) {
-                        errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
-                    }
-                } else {
-                    errorText = result.error;
+            let errorText = "";
+            if(result.errors) {
+                for(let i = 0; i < result.errors.length; i++) {
+                    errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
                 }
-                setErrorMessage(errorText);
-                setShowErrorPopup(true);
+            } else {
+                errorText = result.error;
+            }
+            setErrorMessage(errorText);
+            setShowErrorPopup(true);
         }
     }
 
