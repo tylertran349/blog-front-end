@@ -1,32 +1,61 @@
 import React, { useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
+import { ErrorPopup } from "./ErrorPopup";
 
 export function Homepage() {
     const [posts, setPosts] = useState([]); // An array that stores every post
     const [usernames, setUsernames] = useState({}); // A JavaScript object that stores key-value pairs of user IDs (key) and their associated usernames (value)
+    const [showErrorPopup, setShowErrorPopup] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
-        async function fetchPosts() {
-            const response = await fetch("https://blog-production-10b2.up.railway.app/posts");
-            const data = await response.json();
-            setPosts(data);
-        }
         fetchPosts(); // Get posts by making API call
     }, []); // Empty dependency array means this hook only runs one time when the component mounts (is inserted in the DOM tree)
 
     useEffect(() => {
-        async function fetchUsernames() {
-            const userIds = posts.map(post => post.user); // Create an array named userIds with all the user IDs from each post object in the posts array
-            const usernameMap = {}; // JavaScript object (similar to hashmap) - userId is key, user.username is value
-            for(const userId of userIds) {
-                const response = await fetch(`https://blog-production-10b2.up.railway.app/users/${userId}`); // For each userId in the userIds array, fetch the user from the API
-                const user = await response.json();
-                usernameMap[userId] = user.username; // Add new key-value pair to usernameMap object
-            }
-            setUsernames(usernameMap); // Update usernames state with updated usernameMap object
-        }
         fetchUsernames();
     }, [posts]); // This hook will run anytime the "posts" dependency changes
+
+    async function fetchUsernames() {
+        const userIds = posts.map(post => post.user); // Create an array named userIds with all the user IDs from each post object in the posts array
+        const usernameMap = {}; // JavaScript object (similar to hashmap) - userId is key, user.username is value
+        for(const userId of userIds) {
+            const response = await fetch(`https://blog-production-10b2.up.railway.app/users/${userId}`); // For each userId in the userIds array, fetch the user from the API
+            const user = await response.json();
+            if(!response.ok) {
+                setErrorMessage(user.error);
+                setShowErrorPopup(true);
+            } else {
+                setShowErrorPopup(false);
+            }
+            usernameMap[userId] = user.username; // Add new key-value pair to usernameMap object
+        }
+        setUsernames(usernameMap); // Update usernames state with updated usernameMap object
+    }
+
+    async function fetchPosts() {
+        const response = await fetch("https://blog-production-10b2.up.railway.app/posts");
+        const data = await response.json();
+        if(!response.ok) {
+            setErrorMessage(data.error);
+            setShowErrorPopup(true);
+        } else {
+            setShowErrorPopup(false);
+        }
+        setPosts(data);
+    }
+
+    async function fetchPosts() {
+        const response = await fetch("https://blog-production-10b2.up.railway.app/posts");
+        const data = await response.json();
+        if(!response.ok) {
+            setErrorMessage(data.error);
+            setShowErrorPopup(true);
+        } else {
+            setShowErrorPopup(false);
+        }
+        setPosts(data);
+    }
 
     function formatDate(dateString) {
         const date = new Date(dateString); // Create new date object out of input date string
@@ -45,7 +74,8 @@ export function Homepage() {
             const decodedToken = jwt_decode(token);
             return decodedToken.user;
         } catch(err) {
-            console.error("Error decoding token: " + err);
+            setErrorMessage("Error decoding token: " + err);
+            setShowErrorPopup(true);
             return null;
         }
     }
@@ -53,6 +83,7 @@ export function Homepage() {
     if(localStorage.getItem("token") !== null) {
         return (
             <div>
+                {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
                 <a href={"/logout"}>Logout</a>
                 <a href={`/users/${getLoggedInUser()._id}/settings`}>Settings</a>
                 <a href={"/new-post"}>Create a New Post</a>
@@ -70,6 +101,7 @@ export function Homepage() {
     } else {
         return (
             <div>
+                {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
                 <a href={"/login"}>Login</a>
                 <a href={"/sign-up"}>Sign Up</a>
                 <a href={"/new-post"}>Create a New Post</a>
