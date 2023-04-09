@@ -11,6 +11,7 @@ export function Settings() {
     const [newPassword, setNewPassword] = useState("");
     const [confirmNewPassword, setConfirmNewPassword] = useState("");
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [adminPasscode, setAdminPasscode] = useState("");
 
     useEffect(() => {
         fetchUserData();
@@ -82,6 +83,25 @@ export function Settings() {
         setShowDeleteConfirmation(false);
     }
 
+    async function changeAdminStatus(event) {
+        event.preventDefault();
+        const response = await fetch(`https://blog-production-10b2.up.railway.app/users/${userId}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({ 
+                admin_passcode: adminPasscode,
+            }),
+        });
+        if(response.ok) {
+            window.location.href = `/users/${userId}`;
+        } else {
+            window.location.href = `/users/${userId}/edit`;
+        }
+    }
+
     return (
         <div>
             {showDeleteConfirmation && (<DeleteConfirmation type="account" onConfirm={deleteAccount} onCancel={() => setShowDeleteConfirmation(false)} />)}
@@ -104,6 +124,12 @@ export function Settings() {
                 <label htmlFor="confirmNewPassword">Confirm new password</label>
                 <input id="confirmNewPassword" type="password" placeholder="Re-enter new password" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)}></input>
                 <button type="submit">Save</button>
+            </form>
+            <span>Become an Admin</span>
+            <form onSubmit={changeAdminStatus}>
+                <label htmlFor="adminPasscode">Enter admin passcode</label>
+                <input id="adminPasscode" type="password" placeholder="Admin passcode" value={adminPasscode} onChange={(e) => setAdminPasscode(e.target.value)}></input>
+                <button type="submit">Submit passcode</button>
             </form>
             <button onClick={() => setShowDeleteConfirmation(true)}>Delete Account</button>
         </div>
