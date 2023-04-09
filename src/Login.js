@@ -1,9 +1,12 @@
 import React, { useEffect, useState, useHistory } from "react";
-import { useParams } from "react-router-dom";
+import { ErrorPopup } from "./ErrorPopup";
 
 export function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [showErrorPopup, setShowErrorPopup] = useState(false);
+    const [errorMessage, setShowErrorMessage] = useState("");
+
     const handleSubmit = async (event) => {
         event.preventDefault(); // Prevent default form submission behavior
         const response = await fetch("https://blog-production-10b2.up.railway.app/users/login", {
@@ -18,12 +21,15 @@ export function Login() {
             localStorage.setItem('token', data.token); // Stores key-value pair in local storage (token = key, data.token = JSON web token received from API response)
             window.location.href = "/";
         } else {
-            window.location.href = "/login"; // If login was unsuccessful, redirect user to login page
+            const result = await response.json();
+            setShowErrorMessage(result.error);
+            setShowErrorPopup(true);
         }
     }
 
     return (
         <div>
+            {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
             <span>Login</span>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="username">Enter username</label>
