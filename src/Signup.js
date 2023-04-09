@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useHistory } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState } from "react";
+import { ErrorPopup } from "./ErrorPopup";
 
 export function Signup() {
     const [username, setUsername] = useState("");
@@ -7,6 +7,9 @@ export function Signup() {
     const [lastName, setLastName] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [showErrorPopup, setShowErrorPopup] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+
     const handleSubmit = async (event) => {
         event.preventDefault(); // Prevent default form submission behavior
         const response = await fetch("https://blog-production-10b2.up.railway.app/users", {
@@ -25,12 +28,23 @@ export function Signup() {
         if(response.ok) { // If response is within the range of 200-299 (successful request), then sign up was successful so redirect user to login page
             window.location.href = "/login";
         } else {
-            window.location.href = "/sign-up"; // If login was unsuccessful, redirect user back to sign up page
+            const result = await response.json();
+                let errorText = "";
+                if(result.errors) {
+                    for(let i = 0; i < result.errors.length; i++) {
+                        errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
+                    }
+                } else {
+                    errorText = result.error;
+                }
+                setErrorMessage(errorText);
+                setShowErrorPopup(true);
         }
     }
 
     return (
         <div>
+            {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
             <span>Sign Up</span>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="username">Enter username</label>
@@ -43,7 +57,7 @@ export function Signup() {
                 <input id="password" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}></input>
                 <label htmlFor="confirm-password">Confirm password</label>
                 <input id="confirm-password" type="password" placeholder="Re-enter password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}></input>
-                <button type="submit">Sign In</button>
+                <button type="submit">Sign Up</button>
                 <span>Have an account? <a href="/login">Login</a></span>
             </form>
         </div>
