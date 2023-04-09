@@ -20,6 +20,7 @@ export function Login() {
             const data = await response.json();
             localStorage.setItem('token', data.token); // Stores key-value pair in local storage (token = key, data.token = JSON web token received from API response)
             window.location.href = "/";
+            setShowErrorPopup(false);
         } else {
             const result = await response.json();
             setErrorMessage(result.error);
