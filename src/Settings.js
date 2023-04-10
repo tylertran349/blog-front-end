@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { DeleteConfirmation } from "./DeleteConfirmation";
+import { ErrorPopup } from "./ErrorPopup";
 
 export function Settings() {
     const { userId } = useParams();
@@ -13,6 +14,8 @@ export function Settings() {
     const [confirmNewPassword, setConfirmNewPassword] = useState("");
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [adminPasscode, setAdminPasscode] = useState("");
+    const [showErrorPopup, setShowErrorPopup] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         fetchUserData();
@@ -20,11 +23,18 @@ export function Settings() {
 
     async function fetchUserData() {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/users/${userId}`);
-        const userData = await response.json();
-        setUsername(userData.username);
-        setFirstName(userData.first_name);
-        setLastName(userData.last_name);
-        setIsAdmin(userData.is_admin);
+        if(response.ok) {
+            const userData = await response.json();
+            setUsername(userData.username);
+            setFirstName(userData.first_name);
+            setLastName(userData.last_name);
+            setIsAdmin(userData.is_admin);
+            setShowErrorPopup(false);
+        } else {
+            const result = await response.json();
+            setErrorMessage(result.error);
+            setShowErrorPopup(true);
+        }
     }
 
     async function handleSettingsChange(event) {
@@ -41,7 +51,22 @@ export function Settings() {
                 last_name: lastName, 
             }),
         });
-        window.location.href = `/users/${userId}/settings`;
+        if(response.ok) {
+            setShowErrorPopup(false);
+            window.location.href = `/users/${userId}/settings`;
+        } else {
+            const result = await response.json();
+            let errorText = "";
+            if(result.errors) {
+                for(let i = 0; i < result.errors.length; i++) {
+                    errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
+                }
+            } else {
+                errorText = result.error;
+            }
+            setErrorMessage(errorText);
+            setShowErrorPopup(true);
+        }
     }
 
     async function handlePasswordChange(event) {
@@ -58,7 +83,22 @@ export function Settings() {
                 confirm_password: confirmNewPassword,
             }),
         });
-        window.location.href = `/users/${userId}/settings`;
+        if(response.ok) {
+            setShowErrorPopup(false);
+            window.location.href = `/users/${userId}/settings`;
+        } else {
+            const result = await response.json();
+            let errorText = "";
+            if(result.errors) {
+                for(let i = 0; i < result.errors.length; i++) {
+                    errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
+                }
+            } else {
+                errorText = result.error;
+            }
+            setErrorMessage(errorText);
+            setShowErrorPopup(true);
+        }
     }
 
     async function deleteAccount() {
@@ -70,9 +110,12 @@ export function Settings() {
             },
         });
         if(response.ok) { // If account was successfully deleted, logout the user by redirecting them to logout page
+            setShowErrorPopup(false);
             window.location.href = "/logout";
         } else {
-            window.location.href = `/users/${userId}/settings`; // If user could not be deleted, redirect user back to settings page
+            const result = await response.json();
+            setErrorMessage(result.error);
+            setShowErrorPopup(true);
         }
         setShowDeleteConfirmation(false);
     }
@@ -89,11 +132,27 @@ export function Settings() {
                 admin_passcode: adminPasscode,
             }),
         });
-        window.location.href = `/users/${userId}/settings`;
+        if(response.ok) {
+            setShowErrorPopup(false);
+            window.location.href = `/users/${userId}/settings`;
+        } else {
+            const result = await response.json();
+            let errorText = "";
+            if(result.errors) {
+                for(let i = 0; i < result.errors.length; i++) {
+                    errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
+                }
+            } else {
+                errorText = result.error;
+            }
+            setErrorMessage(errorText);
+            setShowErrorPopup(true);
+        }
     }
 
     return (
         <div>
+            {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
             {showDeleteConfirmation && (<DeleteConfirmation type="account" onConfirm={deleteAccount} onCancel={() => setShowDeleteConfirmation(false)} />)}
             <form onSubmit={handleSettingsChange}>
                 <span>Change User Settings</span>

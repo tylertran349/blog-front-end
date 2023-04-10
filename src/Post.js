@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import { DeleteConfirmation } from "./DeleteConfirmation";
+import { ErrorPopup } from "./ErrorPopup";
 
 export function Post() {
     const { postId } = useParams(); // Extract post ID from URL parameter
@@ -13,6 +14,8 @@ export function Post() {
     const [showDeletePostConfirmation, setShowDeletePostConfirmation] = useState(false);
     const [showDeleteCommentConfirmation, setShowDeleteCommentConfirmation] = useState(false);
     const [commentToBeDeleted, setCommentToBeDeleted] = useState("");
+    const [showErrorPopup, setShowErrorPopup] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         fetchPost();
@@ -24,8 +27,15 @@ export function Post() {
 
     async function fetchUser() {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/users/${post.user}`);
-        const user = await response.json();
-        setUser(user);
+        if(response.ok) {
+            const user = await response.json();
+            setUser(user);
+            setShowErrorPopup(false);
+        } else {
+            const result = await response.json();
+            setErrorMessage(result.error);
+            setShowErrorPopup(true);
+        }
     }
 
     useEffect(() => {
@@ -34,8 +44,15 @@ export function Post() {
 
     async function fetchPost() {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`);
-        const post = await response.json();
-        setPost(post);
+        if(response.ok) {
+            const post = await response.json();
+            setPost(post);
+            setShowErrorPopup(false);
+        } else {
+            const result = await response.json();
+            setErrorMessage(result.error);
+            setShowErrorPopup(true);
+        }
     }
 
     function formatDate(dateString) {
@@ -49,11 +66,18 @@ export function Post() {
 
     async function fetchComments() {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}/comments?$expand=user`); // Fetch list of comments for the post
-        const commentIds = await response.json();
-        const commentRequests = commentIds.map(commentId => fetch(`https://blog-production-10b2.up.railway.app/comments/${commentId}`)); // Create an array of HTTP requests to fetch comment data for each comment using its ID
-        const commentResponses = await Promise.all(commentRequests); // Store an array of all the responses from the HTTP requests to fetch comment data for each comment
-        const comments = await Promise.all(commentResponses.map(response => response.json())); // Store an array of comment objects
-        setComments(comments); // Set the comments state to be the array of comment objects
+        if(response.ok) {
+            const commentIds = await response.json();
+            const commentRequests = commentIds.map(commentId => fetch(`https://blog-production-10b2.up.railway.app/comments/${commentId}`)); // Create an array of HTTP requests to fetch comment data for each comment using its ID
+            const commentResponses = await Promise.all(commentRequests); // Store an array of all the responses from the HTTP requests to fetch comment data for each comment
+            const comments = await Promise.all(commentResponses.map(response => response.json())); // Store an array of comment objects
+            setComments(comments); // Set the comments state to be the array of comment objects
+            setShowErrorPopup(false);
+        } else {
+            const result = await response.json();
+            setErrorMessage(result.error);
+            setShowErrorPopup(true);
+        }
 
         // Fetch usernames for all comments
         const userIds = comments.map(comment => comment.user); // Create an array of all the user IDs for the entire list of comments
@@ -81,39 +105,88 @@ export function Post() {
         if(response.ok) {
             setNewComment(""); // Set newComment to blank string in order to reset text input after form submission
             fetchComments();
+            setShowErrorPopup(false);
+        } else {
+            const result = await response.json();
+            let errorText = "";
+            if(result.errors) {
+                for(let i = 0; i < result.errors.length; i++) {
+                    errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
+                }
+            } else {
+                errorText = result.error;
+            }
+            setErrorMessage(errorText);
+            setShowErrorPopup(true);
         }
     }
 
-    // TODO: Fix post's like button causing post's title and content to be blank after being clicked on
     async function likeButtonHandler() {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`);
-        const postData = await response.json();
-        if(postData.liked_by.includes(getLoggedInUser()._id)) { // If post is already liked by user
-            let updatedLikedByList = postData.liked_by.filter(item => item !== getLoggedInUser()._id);
-            await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                },
-                body: JSON.stringify({ 
-                    liked_by: updatedLikedByList,
-                }),
-            });
-            document.querySelector('#post-like-button').textContent = "Like Post";
+        if(response.ok) {
+            const postData = await response.json();
+            setShowErrorPopup(false);
+            if(postData.liked_by.includes(getLoggedInUser()._id)) { // If post is already liked by user
+                let updatedLikedByList = postData.liked_by.filter(item => item !== getLoggedInUser()._id);
+                const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    },
+                    body: JSON.stringify({ 
+                        liked_by: updatedLikedByList,
+                    }),
+                });
+                if(response.ok) {
+                    document.querySelector('#post-like-button').textContent = "Like Post";
+                    setShowErrorPopup(false);
+                } else {
+                    const result = await response.json();
+                    let errorText = "";
+                    if(result.errors) {
+                        for(let i = 0; i < result.errors.length; i++) {
+                            errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
+                        }
+                    } else {
+                        errorText = result.error;
+                    }
+                    setErrorMessage(errorText);
+                    setShowErrorPopup(true);
+                }
+            } else {
+                let updatedLikedByList = postData.liked_by.concat(getLoggedInUser()._id);
+                const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    },
+                    body: JSON.stringify({ 
+                        liked_by: updatedLikedByList,
+                    }),
+                });
+                if(response.ok) {
+                    document.querySelector('#post-like-button').textContent = "Liked";
+                    setShowErrorPopup(false);
+                } else {
+                    const result = await response.json();
+                    let errorText = "";
+                    if(result.errors) {
+                        for(let i = 0; i < result.errors.length; i++) {
+                            errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
+                        }
+                    } else {
+                        errorText = result.error;
+                    }
+                    setErrorMessage(errorText);
+                    setShowErrorPopup(true);
+                }
+            }
         } else {
-            let updatedLikedByList = postData.liked_by.concat(getLoggedInUser()._id);
-            await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                },
-                body: JSON.stringify({ 
-                    liked_by: updatedLikedByList,
-                }),
-            });
-            document.querySelector('#post-like-button').textContent = "Liked";
+            const result = await response.json();
+            setErrorMessage(result.error);
+            setShowErrorPopup(true);
         }
     }
 
@@ -123,12 +196,13 @@ export function Post() {
         if(!token) {
             return null;
         } 
-
+        setShowErrorPopup(false);
         try {
             const decodedToken = jwt_decode(token);
             return decodedToken.user;
         } catch(err) {
-            console.error("Error decoding token: " + err);
+            setErrorMessage("Error decoding token: " + err);
+            setShowErrorPopup(true);
             return null;
         }
     }
@@ -139,65 +213,117 @@ export function Post() {
     }
 
     async function deleteComment(commentId) {
-        await fetch(`https://blog-production-10b2.up.railway.app/comments/${commentId}`, {
+        const response = await fetch(`https://blog-production-10b2.up.railway.app/comments/${commentId}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${localStorage.getItem("token")}`,
             },
         });
-        fetchComments();
-        setShowDeleteCommentConfirmation(false);
-        setCommentToBeDeleted("");
+        if(response.ok) {
+            fetchComments();
+            setShowDeleteCommentConfirmation(false);
+            setCommentToBeDeleted("");
+            setShowErrorPopup(false);
+        } else {
+            const result = await response.json();
+            setErrorMessage(result.error);
+            setShowErrorPopup(true);
+        }
     }
 
     async function likeCommentHandler(event) {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`);
         const commentData = await response.json();
-        if(commentData.liked_by.includes(getLoggedInUser()._id)) { // If post is already liked by user
-            let updatedLikedByList = commentData.liked_by.filter(item => item !== getLoggedInUser()._id);
-            await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                },
-                body: JSON.stringify({ 
-                    liked_by: updatedLikedByList,
-                }),
-            });
-            event.target.textContent = "Like Comment";
+        if(response.ok) {
+            setShowErrorPopup(false);
+            if(commentData.liked_by.includes(getLoggedInUser()._id)) { // If post is already liked by user
+                let updatedLikedByList = commentData.liked_by.filter(item => item !== getLoggedInUser()._id);
+                const response = await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    },
+                    body: JSON.stringify({ 
+                        liked_by: updatedLikedByList,
+                    }),
+                });
+                if(response.ok) {
+                    event.target.textContent = "Like Comment";
+                    setShowErrorPopup(false);
+                } else {
+                    const result = await response.json();
+                    let errorText = "";
+                    if(result.errors) {
+                        for(let i = 0; i < result.errors.length; i++) {
+                            errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
+                        }
+                    } else {
+                        errorText = result.error;
+                    }
+                    setErrorMessage(errorText);
+                    setShowErrorPopup(true);
+                }
+            } else {
+                let updatedLikedByList = commentData.liked_by.concat(getLoggedInUser()._id);
+                const response = await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    },
+                    body: JSON.stringify({ 
+                        liked_by: updatedLikedByList,
+                    }),
+                });
+                if(response.ok) {
+                    event.target.textContent = "Comment Liked";
+                    setShowErrorPopup(false);
+                } else {
+                    const result = await response.json();
+                    let errorText = "";
+                    if(result.errors) {
+                        for(let i = 0; i < result.errors.length; i++) {
+                            errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
+                        }
+                    } else {
+                        errorText = result.error;
+                    }
+                    setErrorMessage(errorText);
+                    setShowErrorPopup(true);
+                }
+            }
         } else {
-            let updatedLikedByList = commentData.liked_by.concat(getLoggedInUser()._id);
-            await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                },
-                body: JSON.stringify({ 
-                    liked_by: updatedLikedByList,
-                }),
-            });
-            event.target.textContent = "Comment Liked";
+            const result = await response.json();
+            setErrorMessage(result.error);
+            setShowErrorPopup(true);
         }
     }
 
     async function deletePost(event) {
-        await fetch(`https://blog-production-10b2.up.railway.app/posts/${post._id}`, {
+        const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${post._id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${localStorage.getItem("token")}`,
             },
         });
-        setShowDeletePostConfirmation(false);
-        window.location.href = "/"; // Redirect user back to home page after they delete the post
+        if(response.ok) {
+            setShowDeletePostConfirmation(false);
+            window.location.href = "/"; // Redirect user back to home page after they delete the post
+            setShowErrorPopup(false);
+        } else {
+            const result = await response.json();
+            setErrorMessage(result.error);
+            setShowErrorPopup(true);
+        }
     }
 
     if(localStorage.getItem("token") !== null) { // User is logged in
         return (
             <div>
+                {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
                 {showDeletePostConfirmation && (<DeleteConfirmation type="post" onConfirm={deletePost} onCancel={() => setShowDeletePostConfirmation(false)} />)}
                 {showDeleteCommentConfirmation && (<DeleteConfirmation type="comment" onConfirm={() => deleteComment(commentToBeDeleted)} onCancel={() => setShowDeleteCommentConfirmation(false)} />)}
                 <span>{post.title}</span>
@@ -229,6 +355,7 @@ export function Post() {
     } else { // User is not logged in
         return (
             <div>
+                {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
                 <span>{post.title}</span>
                 <span>{post.content}</span>
                 <span>Posted by <a href={`/users/${user._id}`}>{user.username}</a>  on {formatDate(post.date)}</span>

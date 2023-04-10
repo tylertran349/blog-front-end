@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useHistory } from "react";
+import React, { useState } from "react";
 import { ErrorPopup } from "./ErrorPopup";
 
 export function Login() {

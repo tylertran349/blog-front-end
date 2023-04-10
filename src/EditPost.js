@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { ErrorPopup } from "./ErrorPopup";
 
 export function EditPost() {
     const { postId } = useParams(); // Extract post ID from URL parameter
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [published, setPublished] = useState(false);
+    const [showErrorPopup, setShowErrorPopup] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         fetchPostData();
@@ -13,10 +16,16 @@ export function EditPost() {
 
     async function fetchPostData() {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`);
-        const postData = await response.json();
-        setTitle(postData.title);
-        setContent(postData.content);
-        setPublished(postData.published);
+        if(response.ok) {
+            const postData = await response.json();
+            setTitle(postData.title);
+            setContent(postData.content);
+            setPublished(postData.published);
+        } else {
+            const result = await response.json();
+            setErrorMessage(result.error);
+            setShowErrorPopup(true);
+        }
     }
 
     async function handleSubmit(event) {
@@ -34,14 +43,26 @@ export function EditPost() {
             }),
         });
         if(response.ok) { // If response is within the range of 200-299 (successful request), then redirect user back to the dedicated page for the post
+            setShowErrorPopup(false);
             window.location.href = `/posts/${postId}`;
         } else {
-            window.location.href = `/posts/${postId}/edit`; // If blog post could not be updated, redirect user back to same page
+            const result = await response.json();
+            let errorText = "";
+            if(result.errors) {
+                for(let i = 0; i < result.errors.length; i++) {
+                    errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
+                }
+            } else {
+                errorText = result.error;
+            }
+            setErrorMessage(errorText);
+            setShowErrorPopup(true);
         }
     }
 
     return (
         <div>
+            {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
             <span>Edit Post</span>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="title">Enter title</label>

@@ -1,10 +1,13 @@
-import React, { useEffect, useState, useHistory } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState } from "react";
+import { ErrorPopup } from "./ErrorPopup";
 
 export function NewPost() {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [published, setPublished] = useState(true);
+    const [showErrorPopup, setShowErrorPopup] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    
     async function handleSubmit(event) {
         event.preventDefault(); // Prevent default form submission behavior
         const response = await fetch("https://blog-production-10b2.up.railway.app/posts", {
@@ -20,14 +23,26 @@ export function NewPost() {
             }),
         });
         if(response.ok) { // If response is within the range of 200-299 (successful request), then new blog post was successfully created and redirect to home page
+            setShowErrorPopup(false);
             window.location.href = "/";
         } else {
-            window.location.href = "/new-post"; // If new blog post could not be created, redirect user back to the same page
+            const result = await response.json();
+            let errorText = "";
+            if(result.errors) {
+                for(let i = 0; i < result.errors.length; i++) {
+                    errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
+                }
+            } else {
+                errorText = result.error;
+            }
+            setErrorMessage(errorText);
+            setShowErrorPopup(true);
         }
     }
 
     return (
         <div>
+            {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
             <span>Create a New Post</span>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="title">Enter title</label>
