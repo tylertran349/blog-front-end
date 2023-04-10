@@ -58,8 +58,11 @@ export function Homepage() {
     }
 
     function formatDate(dateString) {
-        const date = new Date(dateString); // Create new date object out of input date string
-        const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} at ${date.getHours() % 12}:${date.getMinutes()} ${date.getHours() >= 12 ? "PM" : "AM"}`; // Format the date and store it in formattedDate
+        const date = new Date(dateString);
+        const hours = date.getHours() % 12;
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+        const period = date.getHours() >= 12 ? "PM" : "AM";
+        const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} at ${hours}:${minutes} ${period}`;
         return formattedDate;
     }
 
@@ -69,7 +72,6 @@ export function Homepage() {
         if(!token) {
             return null;
         } 
-
         try {
             const decodedToken = jwt_decode(token);
             return decodedToken.user;

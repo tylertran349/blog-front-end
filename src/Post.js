@@ -39,8 +39,11 @@ export function Post() {
     }
 
     function formatDate(dateString) {
-        const date = new Date(dateString); // Create new date object out of input date string
-        const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} at ${date.getHours() % 12}:${date.getMinutes()} ${date.getHours() >= 12 ? "PM" : "AM"}`; // Format the date and store it in formattedDate
+        const date = new Date(dateString);
+        const hours = date.getHours() % 12;
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+        const period = date.getHours() >= 12 ? "PM" : "AM";
+        const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} at ${hours}:${minutes} ${period}`;
         return formattedDate;
     }
 
@@ -199,7 +202,7 @@ export function Post() {
                 {showDeleteCommentConfirmation && (<DeleteConfirmation type="comment" onConfirm={() => deleteComment(commentToBeDeleted)} onCancel={() => setShowDeleteCommentConfirmation(false)} />)}
                 <span>{post.title}</span>
                 <span>{post.content}</span>
-                <span>Posted by <a href={`/users/${user._id}`}>{user.username}</a></span>
+                <span>Posted by <a href={`/users/${user._id}`}>{user.username}</a>  on {formatDate(post.date)}</span>
                 {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${postId}/edit`}}>Edit Post</button>)}
                 <button id="post-like-button" type="button" onClick={() => setShowDeletePostConfirmation(true)}>Delete Post</button>
                 <span>Comments</span>
@@ -228,7 +231,7 @@ export function Post() {
             <div>
                 <span>{post.title}</span>
                 <span>{post.content}</span>
-                <span>Posted by {user.username}</span>
+                <span>Posted by <a href={`/users/${user._id}`}>{user.username}</a>  on {formatDate(post.date)}</span>
                 <span>Comments</span>
                 <span><a href="/login">Login</a> to comment.</span>
                 <div>
