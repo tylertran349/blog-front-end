@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ErrorPopup } from "./ErrorPopup";
+import jwt_decode from "jwt-decode";
+import { NavBar } from "./NavBar";
 
 export function User() {
     const { userId } = useParams(); // Get userId from URL
@@ -43,10 +45,27 @@ export function User() {
             setShowErrorPopup(true);
         }
     }
+
+    // Returns user object of currently logged in user
+    function getLoggedInUser() {
+        const token = localStorage.getItem("token");
+        if(!token) {
+            return null;
+        } 
+        try {
+            const decodedToken = jwt_decode(token);
+            return decodedToken.user;
+        } catch(err) {
+            setErrorMessage("Error decoding token: " + err);
+            setShowErrorPopup(true);
+            return null;
+        }
+    }
     
     return (
         <div>
             {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
+            <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
             <span>{username}</span>
             {posts.length === 0 && (<span>This user has no posts.</span>)}
             {posts.filter((post) => post.published).map((post) => (

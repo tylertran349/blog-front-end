@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import { DeleteConfirmation } from "./DeleteConfirmation";
 import { ErrorPopup } from "./ErrorPopup";
+import { NavBar } from "./NavBar";
 
 export function Post() {
     const { postId } = useParams(); // Extract post ID from URL parameter
@@ -19,11 +20,9 @@ export function Post() {
 
     useEffect(() => {
         fetchPost();
-    }, [postId]);
-
-    useEffect(() => {
         fetchUser();
-    }, [user]);
+        fetchComments();
+    }, []);
 
     async function fetchUser() {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/users/${post.user}`);
@@ -37,10 +36,6 @@ export function Post() {
             setShowErrorPopup(true);
         }
     }
-
-    useEffect(() => {
-        fetchComments();
-    }, [postId]);
 
     async function fetchPost() {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`);
@@ -196,7 +191,6 @@ export function Post() {
         if(!token) {
             return null;
         } 
-        setShowErrorPopup(false);
         try {
             const decodedToken = jwt_decode(token);
             return decodedToken.user;
@@ -311,8 +305,8 @@ export function Post() {
         });
         if(response.ok) {
             setShowDeletePostConfirmation(false);
-            window.location.href = "/"; // Redirect user back to home page after they delete the post
             setShowErrorPopup(false);
+            window.location.href = "/"; // Redirect user back to home page after they delete the post
         } else {
             const result = await response.json();
             setErrorMessage(result.error);
@@ -324,6 +318,7 @@ export function Post() {
         return (
             <div>
                 {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
+                <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
                 {showDeletePostConfirmation && (<DeleteConfirmation type="post" onConfirm={deletePost} onCancel={() => setShowDeletePostConfirmation(false)} />)}
                 {showDeleteCommentConfirmation && (<DeleteConfirmation type="comment" onConfirm={() => deleteComment(commentToBeDeleted)} onCancel={() => setShowDeleteCommentConfirmation(false)} />)}
                 <span>{post.title}</span>
@@ -356,6 +351,7 @@ export function Post() {
         return (
             <div>
                 {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
+                <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
                 <span>{post.title}</span>
                 <span>{post.content}</span>
                 <span>Posted by <a href={`/users/${user._id}`}>{user.username}</a>  on {formatDate(post.date)}</span>

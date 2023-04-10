@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { ErrorPopup } from "./ErrorPopup";
+import jwt_decode from "jwt-decode";
+import { NavBar } from "./NavBar";
 
 export function Login() {
     const [username, setUsername] = useState("");
@@ -28,18 +30,36 @@ export function Login() {
         }
     }
 
+    // Returns user object of currently logged in user
+    function getLoggedInUser() {
+        const token = localStorage.getItem("token");
+        if(!token) {
+            return null;
+        } 
+        try {
+            const decodedToken = jwt_decode(token);
+            return decodedToken.user;
+        } catch(err) {
+            setErrorMessage("Error decoding token: " + err);
+            setShowErrorPopup(true);
+            return null;
+        }
+    }
+
     return (
         <div>
             {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
+            <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
             <span>Login</span>
-            <form onSubmit={handleSubmit}>
+            {(getLoggedInUser()) && (<span>You are already logged in.</span>)}
+            {(!getLoggedInUser()) && (<form onSubmit={handleSubmit}>
                 <label htmlFor="username">Enter username</label>
                 <input id="username" type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)}></input>
                 <label htmlFor="password">Enter password</label>
                 <input id="password" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}></input>
                 <button type="submit">Sign In</button>
-            </form>
-            <span>Don't have an account? <a href="/sign-up">Sign Up</a></span>
+            </form>)}
+            {(!getLoggedInUser()) && (<span>Don't have an account? <a href="/sign-up">Sign Up</a></span>)}
         </div>
     );
 }

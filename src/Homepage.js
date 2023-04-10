@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 import { ErrorPopup } from "./ErrorPopup";
+import { NavBar } from "./NavBar";
 
 export function Homepage() {
     const [posts, setPosts] = useState([]); // An array that stores every post
@@ -86,8 +87,7 @@ export function Homepage() {
         return (
             <div>
                 {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
-                <a href={"/logout"}>Logout</a>
-                <a href={`/users/${getLoggedInUser()._id}/settings`}>Settings</a>
+                <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
                 <a href={"/new-post"}>Create a New Post</a>
                 {posts.length === 0 && (<span>There are no blog posts.</span>)}
                 {posts.filter((post) => post.published).map((post) => (
@@ -104,8 +104,7 @@ export function Homepage() {
         return (
             <div>
                 {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
-                <a href={"/login"}>Login</a>
-                <a href={"/sign-up"}>Sign Up</a>
+                <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
                 <a href={"/new-post"}>Create a New Post</a>
                 {posts.length === 0 && (<span>There are no blog posts.</span>)}
                 {posts.filter((post) => post.published).map((post) => (

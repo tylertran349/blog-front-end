@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { ErrorPopup } from "./ErrorPopup";
+import jwt_decode from "jwt-decode";
+import { NavBar } from "./NavBar";
 
 export function Signup() {
     const [username, setUsername] = useState("");
@@ -42,9 +44,26 @@ export function Signup() {
         }
     }
 
+    // Returns user object of currently logged in user
+    function getLoggedInUser() {
+        const token = localStorage.getItem("token");
+        if(!token) {
+            return null;
+        } 
+        try {
+            const decodedToken = jwt_decode(token);
+            return decodedToken.user;
+        } catch(err) {
+            setErrorMessage("Error decoding token: " + err);
+            setShowErrorPopup(true);
+            return null;
+        }
+    }
+
     return (
         <div>
             {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
+            <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
             <span>Sign Up</span>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="username">Enter username</label>

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import jwt_decode from "jwt-decode";
 import { ErrorPopup } from "./ErrorPopup";
+import { NavBar } from "./NavBar";
 
 export function EditComment() {
     const { commentId } = useParams();
@@ -58,9 +60,26 @@ export function EditComment() {
         }
     }
 
+    // Returns user object of currently logged in user
+    function getLoggedInUser() {
+        const token = localStorage.getItem("token");
+        if(!token) {
+            return null;
+        } 
+        try {
+            const decodedToken = jwt_decode(token);
+            return decodedToken.user;
+        } catch(err) {
+            setErrorMessage("Error decoding token: " + err);
+            setShowErrorPopup(true);
+            return null;
+        }
+    }
+
     return (
         <div>
             {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
+            <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
             <span>Edit Comment</span>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="content">Enter text</label>
