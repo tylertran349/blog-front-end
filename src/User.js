@@ -23,6 +23,7 @@ export function User() {
             const data = await response.json();
             const filteredData = data.filter((post) => post.user === userId); // Only get posts that were made by the user with the userId from the URL
             setPosts(filteredData);
+            setShowErrorPopup(false);
         } else {
             const result = await response.json();
             setErrorMessage(result.error);
@@ -35,6 +36,7 @@ export function User() {
         if(response.ok) {
             const user = await response.json();
             setUsername(user.username);
+            setShowErrorPopup(false);
         } else {
             const result = await response.json();
             setErrorMessage(result.error);
