@@ -87,6 +87,7 @@ export function Settings() {
         });
         if(response.ok) {
             setShowErrorPopup(false);
+            console.log("Success")
             window.location.href = `/users/${userId}/settings`;
         } else {
             const result = await response.json();
@@ -191,7 +192,7 @@ export function Settings() {
                 <input id="newPassword" type="password" placeholder="New password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}></input>
                 <label htmlFor="confirmNewPassword">Confirm new password</label>
                 <input id="confirmNewPassword" type="password" placeholder="Re-enter new password" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)}></input>
-                <button type="submit">Save</button>
+                <button type="submit">Save Password</button>
             </form>
             {isAdmin && (<span>You are already an admin.</span>)}
             {!isAdmin && (
@@ -199,7 +200,7 @@ export function Settings() {
                     <span>Become an Admin</span>
                     <label htmlFor="adminPasscode">Enter admin passcode</label>
                     <input id="adminPasscode" type="password" placeholder="Admin passcode" value={adminPasscode} onChange={(e) => setAdminPasscode(e.target.value)}></input>
-                    <button type="submit">Submit passcode</button>
+                    <button type="submit">Submit Passcode</button>
                 </form>
             )}
             <button onClick={() => setShowDeleteConfirmation(true)}>Delete Account</button>

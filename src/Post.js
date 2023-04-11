@@ -250,7 +250,6 @@ export function Post() {
                         "Authorization": `Bearer ${localStorage.getItem("token")}`,
                     },
                     body: JSON.stringify({ 
-                        content: commentData.content,
                         liked_by: updatedLikedByList,
                     }),
                 });
