@@ -79,7 +79,7 @@ export function User() {
             {posts.length === 0 && (<span>This user has no posts.</span>)}
             {posts.filter((post) => post.published || (getLoggedInUser() && post.user === getLoggedInUser()._id)).map((post) => ( // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
                 <div key={post._id}>
-                    <span>{post.title}</span>
+                    <a href={`/posts/${post._id}`}>{post.title}</a>
                     <span>{post.content}</span>
                     <span>Posted on {formatDate(post.date)}</span>
                 </div>
