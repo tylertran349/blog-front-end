@@ -24,6 +24,16 @@ export function Post() {
         fetchComments();
     }, []);
 
+    useEffect(() => {
+        if(post.user) {
+            fetchUser();
+        }
+    }, [post]);
+
+    useEffect(() => {
+        fetchComments();
+    }, []);
+
     async function fetchUser() {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/users/${post.user}`);
         if(response.ok) {
@@ -298,6 +308,7 @@ export function Post() {
     }
 
     async function deletePost(event) {
+        console.log(post._id);
         const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${post._id}`, {
             method: "DELETE",
             headers: {
@@ -305,15 +316,9 @@ export function Post() {
                 "Authorization": `Bearer ${localStorage.getItem("token")}`,
             },
         });
-        if(response.ok) {
-            setShowDeletePostConfirmation(false);
-            setShowErrorPopup(false);
-            window.location.href = "/"; // Redirect user back to home page after they delete the post
-        } else {
-            const result = await response.json();
-            setErrorMessage(result.error);
-            setShowErrorPopup(true);
-        }
+        setShowDeletePostConfirmation(false);
+        setShowErrorPopup(false);
+        window.location.href = "/"; // Redirect user back to home page after they delete the post
     }
 
     if(localStorage.getItem("token") !== null) { // User is logged in
