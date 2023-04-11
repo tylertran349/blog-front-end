@@ -94,7 +94,7 @@ export function Homepage() {
                 if(post.published || (getLoggedInUser() && getLoggedInUser()._id === post.user)) { // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
                     return (
                         <div key={post._id}>
-                            <a href={`/posts/${post._id}`}>{post.title}</a>
+                            <a href={`/posts/${post._id}`}>{post.published ? post.title : `${post.title} (PRIVATE)`}</a>
                             <span>{post.content}</span>
                             <span>Posted by <a href={`/users/${post.user}`}>{usernames[post.user]}</a> on {formatDate(post.date)}</span>
                             <span>Likes: {post.likes}</span>
