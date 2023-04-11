@@ -90,14 +90,20 @@ export function Homepage() {
                 <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
                 <a href={"/new-post"}>Create a New Post</a>
                 {posts.length === 0 && (<span>There are no blog posts.</span>)}
-                {posts.filter((post) => post.published).map((post) => (
-                    <div key={post._id}>
-                        <a href={`/posts/${post._id}`}>{post.title}</a>
-                        <span>{post.content}</span>
-                        <span>Posted by <a href={`/users/${post.user}`}>{usernames[post.user]}</a> on {formatDate(post.date)}</span>
-                        <span>Likes: {post.likes}</span>
-                    </div>
-                ))}
+                {posts.map((post) => {
+                if(post.published || (getLoggedInUser() && getLoggedInUser()._id === post.user)) { // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
+                    return (
+                        <div key={post._id}>
+                            <a href={`/posts/${post._id}`}>{post.title}</a>
+                            <span>{post.content}</span>
+                            <span>Posted by <a href={`/users/${post.user}`}>{usernames[post.user]}</a> on {formatDate(post.date)}</span>
+                            <span>Likes: {post.likes}</span>
+                        </div>
+                    );
+                } else {
+                    return null;
+                }
+            })}
             </div>
         );    
     } else {

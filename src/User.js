@@ -61,6 +61,15 @@ export function User() {
             return null;
         }
     }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const hours = date.getHours() % 12;
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+        const period = date.getHours() >= 12 ? "PM" : "AM";
+        const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} at ${hours}:${minutes} ${period}`;
+        return formattedDate;
+    }
     
     return (
         <div>
@@ -68,9 +77,11 @@ export function User() {
             <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
             <span>{username}</span>
             {posts.length === 0 && (<span>This user has no posts.</span>)}
-            {posts.filter((post) => post.published).map((post) => (
+            {posts.filter((post) => post.published || (getLoggedInUser() && post.user === getLoggedInUser()._id)).map((post) => ( // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
                 <div key={post._id}>
                     <span>{post.title}</span>
+                    <span>{post.content}</span>
+                    <span>Posted on {formatDate(post.date)}</span>
                 </div>
             ))}
         </div>
