@@ -330,8 +330,9 @@ export function Post() {
                 <span>{post.title}</span>
                 <span>{post.content}</span>
                 <span>Posted by <a href={`/users/${user._id}`}>{user.username}</a>  on {formatDate(post.date)}</span>
+                <button id="post-like-button" type="button" onClick={() => likeButtonHandler()}>Like Post</button>
                 {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${postId}/edit`}}>Edit Post</button>)}
-                {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button id="post-like-button" type="button" onClick={() => setShowDeletePostConfirmation(true)}>Delete Post</button>)}
+                {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button id="post-delete-button" type="button" onClick={() => setShowDeletePostConfirmation(true)}>Delete Post</button>)}
                 <span>Comments</span>
                 <form onSubmit={handleCommentSubmit}>
                     <input id="comment-form" type="text" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></input>
