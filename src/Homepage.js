@@ -97,7 +97,7 @@ export function Homepage() {
                             <a href={`/posts/${post._id}`}>{post.published ? post.title : `${post.title} (PRIVATE)`}</a>
                             <span>{post.content}</span>
                             <span>Posted by <a href={`/users/${post.user}`}>{usernames[post.user]}</a> on {formatDate(post.date)}</span>
-                            <span>Likes: {post.likes}</span>
+                            <span>Likes: {post.liked_by.length}</span>
                         </div>
                     );
                 } else {
@@ -118,7 +118,7 @@ export function Homepage() {
                         <a href={`/posts/${post._id}`}>{post.title}</a>
                         <span>{post.content}</span>
                         <span>Posted by <a href={`/users/${post.user}`}>{usernames[post.user]}</a> on {formatDate(post.date)}</span>
-                        <span>Likes: {post.likes}</span>
+                        <span>Likes: {post.liked_by.length}</span>
                     </div>
                 ))}
             </div>
