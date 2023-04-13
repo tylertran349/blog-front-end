@@ -87,7 +87,7 @@ export function Homepage() {
         return (
             <div id="content">
                 <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
-                {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
+                {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
                 <a href={"/new-post"}>Create a New Post</a>
                 {posts.length === 0 && (<span>There are no blog posts.</span>)}
                 {posts.map((post) => {
@@ -110,7 +110,7 @@ export function Homepage() {
         return (
             <div id="content">
                 <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
-                {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
+                {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
                 <a href={"/new-post"}>Create a New Post</a>
                 {posts.length === 0 && (<span>There are no blog posts.</span>)}
                 {posts.filter((post) => post.published).map((post) => (
