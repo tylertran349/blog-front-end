@@ -85,9 +85,9 @@ export function Homepage() {
 
     if(localStorage.getItem("token") !== null) {
         return (
-            <div>
-                {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
+            <div id="content">
                 <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
+                {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
                 <a href={"/new-post"}>Create a New Post</a>
                 {posts.length === 0 && (<span>There are no blog posts.</span>)}
                 {posts.map((post) => {
@@ -108,9 +108,9 @@ export function Homepage() {
         );    
     } else {
         return (
-            <div>
-                {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
+            <div id="content">
                 <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
+                {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
                 <a href={"/new-post"}>Create a New Post</a>
                 {posts.length === 0 && (<span>There are no blog posts.</span>)}
                 {posts.filter((post) => post.published).map((post) => (

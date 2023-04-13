@@ -2,8 +2,8 @@ import React from "react";
 
 export function ErrorPopup(props) {
     return (
-        <div>
-            <span>{props.message}</span>
+        <div id="error-popup">
+            <span id="error-message">{props.message}</span>
         </div>
     );
 }

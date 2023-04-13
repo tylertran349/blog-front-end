@@ -335,7 +335,7 @@ export function Post() {
                 {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button id="post-delete-button" type="button" onClick={() => setShowDeletePostConfirmation(true)}>Delete Post</button>)}
                 <span>Comments</span>
                 <form onSubmit={handleCommentSubmit}>
-                    <input id="comment-form" type="text" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></input>
+                    <input id="comment-form" type="textarea" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></input>
                     <button type="submit">Send Comment</button>
                 </form>
                 <div>

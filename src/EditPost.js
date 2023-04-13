@@ -81,14 +81,14 @@ export function EditPost() {
 
     return (
         <div>
-            {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
             <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
+            {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
             <span>Edit Post</span>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="title">Enter title</label>
                 <input id="title" type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)}></input>
                 <label htmlFor="content">Enter text</label>
-                <input id="content" type="text" placeholder="Text" value={content} onChange={(e) => setContent(e.target.value)}></input>
+                <input id="content" type="textarea" placeholder="Text" value={content} onChange={(e) => setContent(e.target.value)}></input>
                 <label htmlFor="published">Do you want to make the post public?</label>
                 <input id="published" checked={published} type="checkbox" onChange={(e) => setPublished(e.target.checked)}></input>
                 <button type="submit">Save</button>

@@ -67,7 +67,7 @@ export function NewPost() {
                 <label htmlFor="title">Enter title</label>
                 <input id="title" type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)}></input>
                 <label htmlFor="content">Enter text</label>
-                <input id="content" type="text" placeholder="Text" value={content} onChange={(e) => setContent(e.target.value)}></input>
+                <input id="content" type="textarea" placeholder="Text" value={content} onChange={(e) => setContent(e.target.value)}></input>
                 <label htmlFor="published">Do you want to make the post public?</label>
                 <input id="published" checked={published} type="checkbox" onChange={(e) => setPublished(e.target.checked)}></input>
                 <button type="submit">Create New Post</button>

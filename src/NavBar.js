@@ -3,7 +3,7 @@ import React from "react";
 export function NavBar(props) {
     if(!props.loggedInUserId) { // Only if props.loggedInUserId is falsy (e.g. user is not logged in)
         return (
-            <div>
+            <div id="nav-bar">
                 <a href={"/"}>Home</a>
                 <a href={"/login"}>Login</a>
                 <a href={"/sign-up"}>Sign Up</a>
@@ -11,10 +11,13 @@ export function NavBar(props) {
         );
     } else {
         return (
-            <div>
-                <a href={"/"}>Home</a>
-                <a href={`/users/${props.loggedInUserId}/settings`}>Settings</a>
-                <a href={"/logout"}>Logout</a>
+            <div id="nav-bar">
+                <a href={"/"} id="title">Blog</a>
+                <div id="nav-bar-right-links">
+                    <a href={"/"}>Home</a>
+                    <a href={`/users/${props.loggedInUserId}/settings`}>Settings</a>
+                    <a href={"/logout"}>Logout</a>
+                </div>
             </div>
         );
     }
