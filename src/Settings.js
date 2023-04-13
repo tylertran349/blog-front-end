@@ -171,8 +171,8 @@ export function Settings() {
 
     return (
         <div>
-            {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
             <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
+            {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
             {showDeleteConfirmation && (<DeleteConfirmation type="account" onConfirm={deleteAccount} onCancel={() => setShowDeleteConfirmation(false)} />)}
             <form onSubmit={handleSettingsChange}>
                 <span>Change User Settings</span>

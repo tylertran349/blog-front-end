@@ -357,8 +357,8 @@ export function Post() {
     } else { // User is not logged in
         return (
             <div>
-                {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
                 <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
+                {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
                 <span>{post.title}</span>
                 <span>{post.content}</span>
                 <span>Posted by <a href={`/users/${user._id}`}>{user.username}</a>  on {formatDate(post.date)}</span>

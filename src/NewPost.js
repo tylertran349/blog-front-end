@@ -60,8 +60,8 @@ export function NewPost() {
 
     return (
         <div>
-            {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
             <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
+            {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
             <span>Create a New Post</span>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="title">Enter title</label>

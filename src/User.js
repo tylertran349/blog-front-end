@@ -73,8 +73,8 @@ export function User() {
     
     return (
         <div>
-            {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
             <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
+            {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
             <span>{username}</span>
             {posts.length === 0 && (<span>This user has no posts.</span>)}
             {posts.filter((post) => post.published || (getLoggedInUser() && post.user === getLoggedInUser()._id)).map((post) => ( // Also show all unpublished posts if logged in user is the author of the unpublished post(s)

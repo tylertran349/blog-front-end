@@ -78,8 +78,8 @@ export function EditComment() {
 
     return (
         <div>
-            {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
             <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
+            {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
             <span>Edit Comment</span>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="content">Enter text</label>
