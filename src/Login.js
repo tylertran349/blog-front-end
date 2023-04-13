@@ -47,9 +47,9 @@ export function Login() {
     }
 
     return (
-        <div>
-            {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
+        <div id="content">
             <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
+            {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
             <span>Login</span>
             {(getLoggedInUser()) && (<span>You are already logged in.</span>)}
             {(!getLoggedInUser()) && (<form onSubmit={handleSubmit}>
