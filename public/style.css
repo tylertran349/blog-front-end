@@ -1,4 +1,116 @@
-div {
+* {
+    /*
+    border: 1px solid red;
+    */
+}
+
+html {
+    font-size: 10px;
+    font-family: 'Inter', sans-serif;
+    --accent-color: #3457D5;
+    --main-text-color: #747474;
+    --title-text-color: #3d3d3d;
+    --box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    --error-color: #de4343;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    min-height: 100vh;
+    background: #FCFCFC;
     display: flex;
     flex-direction: column;
+    align-items: center;
+}
+
+#root {
+    width: 100%;
+}
+
+#nav-bar {
+    background: white;
+    width: 100%;
+    height: 8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--box-shadow);
+}
+
+#nav-bar #title {
+    margin-left: 4rem;
+    font-size: 4rem;
+    font-weight: 900;
+}
+
+#nav-bar-right-links {
+    margin-right: 4rem;
+    display: flex;
+    gap: 4rem;
+    font-weight: bold;
+}
+
+#nav-bar a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-size: 2rem;
+}
+
+#error-popup {
+    position: sticky;
+    top: 10rem;
+    background-color: var(--error-color);
+    border-radius: 0.5rem;
+    z-index: 9999;
+    width: 15%;
+    display: flex;
+    left: 0;
+    right: 0;
+    padding: 2rem;
+    margin: 2rem auto 2rem auto;
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    align-items: center;
+    color: white;
+    box-shadow: var(--box-shadow);
+}
+
+#hide-error-button {
+    background: transparent;
+    font-size: 2.5rem;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    color: white;
+    cursor: pointer;
+}
+
+#warning-icon {
+    background: transparent;
+    font-size: 2.5rem;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    color: white;
+}
+
+/* Exit icon (Material) */
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 48
+}
+
+/* Warning icon (Material) */
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 48
 }
