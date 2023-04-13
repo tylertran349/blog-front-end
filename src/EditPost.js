@@ -80,17 +80,17 @@ export function EditPost() {
 
 
     return (
-        <div>
+        <div id="content">
             <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
-            {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
+            {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
             <span>Edit Post</span>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="title">Enter title</label>
-                <input id="title" type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)}></input>
+                <input id="title" type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={(e) => { if(e.key === "Enter") { e.preventDefault() }}}></input>
                 <label htmlFor="content">Enter text</label>
-                <input id="content" type="textarea" placeholder="Text" value={content} onChange={(e) => setContent(e.target.value)}></input>
+                <input id="content" type="textarea" placeholder="Text" value={content} onChange={(e) => setContent(e.target.value)} onKeyDown={(e) => { if(e.key === "Enter") { e.preventDefault() }}}></input>
                 <label htmlFor="published">Do you want to make the post public?</label>
-                <input id="published" checked={published} type="checkbox" onChange={(e) => setPublished(e.target.checked)}></input>
+                <input id="published" checked={published} type="checkbox" onChange={(e) => setPublished(e.target.checked)} onKeyDown={(e) => { if(e.key === "Enter") { e.preventDefault() }}}></input>
                 <button type="submit">Save</button>
             </form>
         </div>
