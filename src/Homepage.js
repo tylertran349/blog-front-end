@@ -83,42 +83,47 @@ export function Homepage() {
         }
     }
 
-    if(localStorage.getItem("token") !== null) {
+    if(localStorage.getItem("token") !== null) { // User is logged in
         return (
             <div id="content">
                 <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
                 {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
-                <a href={"/new-post"}>Create a New Post</a>
+                <a href={"/new-post"}><button id="new-post-button">Create a New Post</button></a>
                 {posts.length === 0 && (<span>There are no blog posts.</span>)}
                 {posts.map((post) => {
-                if(post.published || (getLoggedInUser() && getLoggedInUser()._id === post.user)) { // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
-                    return (
-                        <div key={post._id}>
-                            <a href={`/posts/${post._id}`}>{post.published ? post.title : `${post.title} (PRIVATE)`}</a>
-                            <span>{post.content}</span>
-                            <span>Posted by <a href={`/users/${post.user}`}>{usernames[post.user]}</a> on {formatDate(post.date)}</span>
-                            <span>Likes: {post.liked_by.length}</span>
-                        </div>
-                    );
-                } else {
-                    return null;
-                }
-            })}
+                    if(post.published || (getLoggedInUser() && getLoggedInUser()._id === post.user)) { // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
+                        return (
+                            <div id="post">
+                                <a href={`/posts/${post._id}`} id="title">{post.published ? post.title : `${post.title} (UNPUBLISHED)`}</a> {/* Add "(UNPUBLISHED)" at end of post title if post is unpublished */}
+                                <span>{post.content}</span>
+                                <span>Posted by <a href={`/users/${post.user}`} id="user-link">{usernames[post.user]}</a> on {formatDate(post.date)}</span>
+                                <div id="post-like-counter">
+                                    <span class="material-symbols-outlined">thumb_up</span>
+                                    <span>{post.liked_by.length}</span>
+                                </div>
+                            </div>
+                        );
+                    } else {
+                        return null;
+                    }
+                })}
             </div>
         );    
-    } else {
+    } else { // User is not logged in
         return (
             <div id="content">
                 <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
                 {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
-                <a href={"/new-post"}>Create a New Post</a>
                 {posts.length === 0 && (<span>There are no blog posts.</span>)}
                 {posts.filter((post) => post.published).map((post) => (
-                    <div key={post._id}>
+                    <div id="post">
                         <a href={`/posts/${post._id}`}>{post.title}</a>
                         <span>{post.content}</span>
-                        <span>Posted by <a href={`/users/${post.user}`}>{usernames[post.user]}</a> on {formatDate(post.date)}</span>
-                        <span>Likes: {post.liked_by.length}</span>
+                        <span>Posted by <a href={`/users/${post.user}`} id="user-link">{usernames[post.user]}</a> on {formatDate(post.date)}</span>
+                        <div id="post-like-counter">
+                            <span class="material-symbols-outlined">thumb_up</span>
+                            <span>{post.liked_by.length}</span>
+                        </div>
                     </div>
                 ))}
             </div>

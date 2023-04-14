@@ -144,7 +144,7 @@ export function Post() {
                     }),
                 });
                 if(response.ok) {
-                    document.querySelector('#post-like-button').textContent = "Like Post";
+                    document.querySelector('#post-like-button').style.fontVariationSettings = `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48`;
                     setShowErrorPopup(false);
                 } else {
                     const result = await response.json();
@@ -159,7 +159,7 @@ export function Post() {
                     setErrorMessage(errorText);
                     setShowErrorPopup(true);
                 }
-            } else {
+            } else { // If post is not already liked by user
                 let updatedLikedByList = postData.liked_by.concat(getLoggedInUser()._id);
                 const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`, {
                     method: "PATCH",
@@ -172,7 +172,7 @@ export function Post() {
                     }),
                 });
                 if(response.ok) {
-                    document.querySelector('#post-like-button').textContent = "Liked";
+                    document.querySelector('#post-like-button').style.fontVariationSettings = `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48`;
                     setShowErrorPopup(false);
                 } else {
                     const result = await response.json();
@@ -321,60 +321,67 @@ export function Post() {
     }
 
     if(localStorage.getItem("token") !== null) { // User is logged in
+        console.log(post.liked_by);
         return (
-            <div>
+            <div id="content">
                 {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
                 <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
                 {showDeletePostConfirmation && (<DeleteConfirmation type="post" onConfirm={deletePost} onCancel={() => setShowDeletePostConfirmation(false)} />)}
                 {showDeleteCommentConfirmation && (<DeleteConfirmation type="comment" onConfirm={() => deleteComment(commentToBeDeleted)} onCancel={() => setShowDeleteCommentConfirmation(false)} />)}
-                <span>{post.title}</span>
-                <span>{post.content}</span>
-                <span>Posted by <a href={`/users/${user._id}`}>{user.username}</a>  on {formatDate(post.date)}</span>
-                <button id="post-like-button" type="button" onClick={() => likeButtonHandler()}>Like Post</button>
-                {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${postId}/edit`}}>Edit Post</button>)}
-                {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button id="post-delete-button" type="button" onClick={() => setShowDeletePostConfirmation(true)}>Delete Post</button>)}
-                <span>Comments</span>
-                <form onSubmit={handleCommentSubmit}>
-                    <input id="comment-form" type="textarea" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></input>
-                    <button type="submit">Send Comment</button>
-                </form>
-                <div>
-                    {comments.length === 0 && (<span>There are no comments.</span>)}
-                </div>
-                {comments.map((comment) => {
-                    return (
+                <div id="post">
+                    <span id="title">{post.title}</span>
+                    <span>{post.content}</span>
+                    <span>Posted by <a href={`/users/${user._id}`} id="user-link">{user.username}</a>  on {formatDate(post.date)}</span>
                     <div>
-                        {comment && (<span>{comment.content}</span>)}
-                        <span>Posted by <a href={`/users/${comment.user}`}>{commentUsers[comment.user]}</a> on {formatDate(comment.date)}</span>
-                        {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/comments/${comment._id}/edit`}}>Edit Comment</button>)}
-                        {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button">Delete Comment</button>)}
-                        <button type="button" onClick={likeCommentHandler} id={comment._id}>Like Comment</button>
+                        <button id="post-like-button" type="button" onClick={() => likeButtonHandler()} class="material-symbols-outlined">thumb_up</button>
                     </div>
-                    )
-                })}
+                    {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${postId}/edit`}}>Edit Post</button>)}
+                    {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button id="post-delete-button" type="button" onClick={() => setShowDeletePostConfirmation(true)}>Delete Post</button>)}
+                    <span id="title">Comments</span>
+                    <form onSubmit={handleCommentSubmit}>
+                        <input id="comment-form" type="textarea" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></input>
+                        <button type="submit">Send Comment</button>
+                    </form>
+                    <div>
+                        {comments.length === 0 && (<span>There are no comments.</span>)}
+                    </div>
+                    {comments.map((comment) => {
+                        return (
+                        <div>
+                            {comment && (<span>{comment.content}</span>)}
+                            <span>Posted by <a href={`/users/${comment.user}`} id="user-link">{commentUsers[comment.user]}</a> on {formatDate(comment.date)}</span>
+                            {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/comments/${comment._id}/edit`}}>Edit Comment</button>)}
+                            {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button">Delete Comment</button>)}
+                            <button type="button" onClick={likeCommentHandler} id={comment._id} class="material-symbols-outlined">thumb_up</button>
+                        </div>
+                        )
+                    })}
+                </div>
             </div>
         );
     } else { // User is not logged in
         return (
-            <div>
+            <div id="content">
                 <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
                 {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
-                <span>{post.title}</span>
-                <span>{post.content}</span>
-                <span>Posted by <a href={`/users/${user._id}`}>{user.username}</a>  on {formatDate(post.date)}</span>
-                <span>Comments</span>
-                <span><a href="/login">Login</a> to comment.</span>
-                <div>
-                    {comments.length === 0 && (<span>There are no comments.</span>)}
-                </div>
-                {comments.map((comment) => {
-                    return (
+                <div id="post">
+                    <span id="title">{post.title}</span>
+                    <span>{post.content}</span>
+                    <span>Posted by <a href={`/users/${user._id}`} id="user-link">{user.username}</a> on {formatDate(post.date)}</span>
+                    <span id="title">Comments</span>
+                    <span><a href="/login">Login</a> to comment.</span>
                     <div>
-                        <span>{comment.content}</span>
-                        <span>Posted by <a href={`/users/${comment.user}`}>{commentUsers[comment.user]}</a> on {formatDate(comment.date)}</span>
+                        {comments.length === 0 && (<span>There are no comments.</span>)}
                     </div>
-                    )
-                })}
+                    {comments.map((comment) => {
+                        return (
+                        <div>
+                            <span>{comment.content}</span>
+                            <span>Posted by <a href={`/users/${comment.user}`} id="user-link">{commentUsers[comment.user]}</a> on {formatDate(comment.date)}</span>
+                        </div>
+                        )
+                    })}
+                </div>
             </div>
         );
     }
