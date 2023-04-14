@@ -6,12 +6,12 @@
 
 html {
     font-size: 10px;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
     --accent-color: #3457D5;
     --main-text-color: #747474;
-    --title-text-color: #3d3d3d;
     --box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     --error-color: #de4343;
+    --regular-text-size: 1.6rem;
 }
 
 body {
@@ -24,8 +24,21 @@ body {
     align-items: center;
 }
 
+span {
+    line-height: 1.5;
+}
+
 #root {
     width: 100%;
+}
+
+#content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 3rem;
+    font-size: var(--regular-text-size);
 }
 
 #nav-bar {
@@ -41,7 +54,7 @@ body {
 #nav-bar #title {
     margin-left: 4rem;
     font-size: 4rem;
-    font-weight: 900;
+    font-weight: bold;
 }
 
 #nav-bar-right-links {
@@ -69,7 +82,6 @@ body {
     right: 0;
     padding: 2rem;
     margin: 2rem auto 2rem auto;
-    font-size: 1.5rem;
     display: flex;
     justify-content: space-between;
     gap: 2rem;
@@ -97,20 +109,71 @@ body {
     color: white;
 }
 
-/* Exit icon (Material) */
+/* Mateiral icon styling */
 .material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 48
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 48
 }
 
-/* Warning icon (Material) */
-.material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 48
+/* Mateiral icon styling (filled) */
+.material-symbols-outlined-fill {
+    font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 48
+}
+
+button {
+    padding: 1rem;
+    color: white;
+    background: var(--accent-color);
+    border: none;
+    border-radius: 0.5rem;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+}
+
+#post {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: white;
+    box-shadow: var(--box-shadow);
+    padding: 2rem;
+    border-radius: 0.5rem;
+    gap: 1.5rem;
+}
+
+a {
+    text-decoration: none;
+}
+
+#user-link {
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+#post #title {
+    font-weight: bold;
+    color: var(--accent-color);
+    font-size: calc(1.5 * var(--regular-text-size));
+}
+
+#post-like-counter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+#post-like-button {
+    background: transparent;
+    color: var(--accent-color);
 }
