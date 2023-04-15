@@ -326,8 +326,8 @@ export function Post() {
         console.log(post.liked_by);
         return (
             <div id="content">
-                {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
                 <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
+                {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
                 {showDeletePostConfirmation && (<DeleteConfirmation type="post" onConfirm={deletePost} onCancel={() => setShowDeletePostConfirmation(false)} />)}
                 {showDeleteCommentConfirmation && (<DeleteConfirmation type="comment" onConfirm={() => deleteComment(commentToBeDeleted)} onCancel={() => setShowDeleteCommentConfirmation(false)} />)}
                 <div id="post">
