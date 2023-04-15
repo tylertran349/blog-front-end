@@ -20,8 +20,6 @@ export function Post() {
 
     useEffect(() => {
         fetchPost();
-        fetchUser();
-        fetchComments();
     }, []);
 
     useEffect(() => {
@@ -146,6 +144,7 @@ export function Post() {
                 if(response.ok) {
                     document.querySelector('#post-like-button').style.fontVariationSettings = `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48`;
                     setShowErrorPopup(false);
+                    fetchPost();
                 } else {
                     const result = await response.json();
                     let errorText = "";
@@ -174,6 +173,7 @@ export function Post() {
                 if(response.ok) {
                     document.querySelector('#post-like-button').style.fontVariationSettings = `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48`;
                     setShowErrorPopup(false);
+                    fetchPost();
                 } else {
                     const result = await response.json();
                     let errorText = "";
@@ -256,6 +256,7 @@ export function Post() {
                 if(response.ok) {
                     event.target.textContent = "Like Comment";
                     setShowErrorPopup(false);
+                    fetchComments();
                 } else {
                     const result = await response.json();
                     let errorText = "";
@@ -285,6 +286,7 @@ export function Post() {
                 if(response.ok) {
                     event.target.textContent = "Comment Liked";
                     setShowErrorPopup(false);
+                    fetchComments();
                 } else {
                     const result = await response.json();
                     let errorText = "";
@@ -332,14 +334,17 @@ export function Post() {
                     <span id="title">{post.title}</span>
                     <span>{post.content}</span>
                     <span>Posted by <a href={`/users/${user._id}`} id="user-link">{user.username}</a>  on {formatDate(post.date)}</span>
-                    <div>
-                        <button id="post-like-button" type="button" onClick={() => likeButtonHandler()} class="material-symbols-outlined">thumb_up</button>
+                    <div id="post-like-counter">
+                        <button id="post-like-button" type="button" onClick={() => likeButtonHandler()} className="material-symbols-outlined">thumb_up</button>
+                        {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
                     </div>
-                    {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${postId}/edit`}}>Edit Post</button>)}
-                    {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button id="post-delete-button" type="button" onClick={() => setShowDeletePostConfirmation(true)}>Delete Post</button>)}
+                    <div id="modify-post-actions">
+                        {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${postId}/edit`}} className="material-symbols-outlined" id="edit-post-button">edit</button>)}
+                        {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button id="delete-post-button" type="button" onClick={() => setShowDeletePostConfirmation(true)} className="material-symbols-outlined">delete</button>)}
+                    </div>
                     <span id="title">Comments</span>
-                    <form onSubmit={handleCommentSubmit}>
-                        <input id="comment-form" type="textarea" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></input>
+                    <form onSubmit={handleCommentSubmit} id="comment-form">
+                        <input id="comment-input" type="textarea" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></input>
                         <button type="submit">Send Comment</button>
                     </form>
                     <div>
@@ -352,7 +357,7 @@ export function Post() {
                             <span>Posted by <a href={`/users/${comment.user}`} id="user-link">{commentUsers[comment.user]}</a> on {formatDate(comment.date)}</span>
                             {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/comments/${comment._id}/edit`}}>Edit Comment</button>)}
                             {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button">Delete Comment</button>)}
-                            <button type="button" onClick={likeCommentHandler} id={comment._id} class="material-symbols-outlined">thumb_up</button>
+                            <button type="button" onClick={likeCommentHandler} id={comment._id} className="material-symbols-outlined">thumb_up</button>
                         </div>
                         )
                     })}
@@ -368,6 +373,10 @@ export function Post() {
                     <span id="title">{post.title}</span>
                     <span>{post.content}</span>
                     <span>Posted by <a href={`/users/${user._id}`} id="user-link">{user.username}</a> on {formatDate(post.date)}</span>
+                    <div id="post-like-counter">
+                        <span className="material-symbols-outlined">thumb_up</span>
+                        
+                    </div>
                     <span id="title">Comments</span>
                     <span><a href="/login">Login</a> to comment.</span>
                     <div>
