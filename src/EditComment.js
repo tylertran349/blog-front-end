@@ -83,7 +83,7 @@ export function EditComment() {
             <span>Edit Comment</span>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="content">Enter text</label>
-                <input id="content" type="textarea" placeholder="Text" value={content} onChange={(e) => setContent(e.target.value)} onKeyDown={(e) => { if(e.key === "Enter") { e.preventDefault() }}}></input>
+                <textarea id="content" placeholder="Text" value={content} onChange={(e) => setContent(e.target.value)}></textarea>
                 <button type="submit">Save</button>
             </form>
         </div>

@@ -88,7 +88,7 @@ export function EditPost() {
                 <label htmlFor="title">Enter title</label>
                 <input id="title" type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={(e) => { if(e.key === "Enter") { e.preventDefault() }}}></input>
                 <label htmlFor="content">Enter text</label>
-                <input id="content" type="textarea" placeholder="Text" value={content} onChange={(e) => setContent(e.target.value)} onKeyDown={(e) => { if(e.key === "Enter") { e.preventDefault() }}}></input>
+                <textarea id="content" placeholder="Text" value={content} onChange={(e) => setContent(e.target.value)}></textarea>
                 <label htmlFor="published">Do you want to make the post public?</label>
                 <input id="published" checked={published} type="checkbox" onChange={(e) => setPublished(e.target.checked)} onKeyDown={(e) => { if(e.key === "Enter") { e.preventDefault() }}}></input>
                 <button type="submit">Save</button>

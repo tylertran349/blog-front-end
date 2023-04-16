@@ -95,7 +95,7 @@ export function Homepage() {
                         return (
                             <div id="post">
                                 <a href={`/posts/${post._id}`} id="title">{post.published ? post.title : `${post.title} (UNPUBLISHED)`}</a> {/* Add "(UNPUBLISHED)" at end of post title if post is unpublished */}
-                                <span>{post.content}</span>
+                                <span id="post-content">{post.content}</span>
                                 <span>Posted by <a href={`/users/${post.user}`} id="user-link">{usernames[post.user]}</a> on {formatDate(post.date)}</span>
                                 <div id="post-like-counter">
                                     <span class="material-symbols-outlined">thumb_up</span>
@@ -117,8 +117,8 @@ export function Homepage() {
                 {posts.length === 0 && (<span>There are no blog posts.</span>)}
                 {posts.filter((post) => post.published).map((post) => (
                     <div id="post">
-                        <a href={`/posts/${post._id}`}>{post.title}</a>
-                        <span>{post.content}</span>
+                        <a href={`/posts/${post._id}`} id="title">{post.title}</a>
+                        <span id="post-content">{post.content}</span>
                         <span>Posted by <a href={`/users/${post.user}`} id="user-link">{usernames[post.user]}</a> on {formatDate(post.date)}</span>
                         <div id="post-like-counter">
                             <span class="material-symbols-outlined">thumb_up</span>
