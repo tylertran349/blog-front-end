@@ -30,7 +30,7 @@ export function Post() {
 
     useEffect(() => {
         fetchComments();
-    }, []);
+    }, [user]);
 
     async function fetchUser() {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/users/${post.user}`);
@@ -71,7 +71,7 @@ export function Post() {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}/comments?$expand=user`); // Fetch list of comments for the post
         if(response.ok) {
             const commentIds = await response.json();
-            const commentRequests = commentIds.map(commentId => fetch(`https://blog-production-10b2.up.railway.app/comments/${commentId}`)); // Create an array of HTTP requests to fetch comment data for each comment using its ID
+            const commentRequests = await commentIds.map(commentId => fetch(`https://blog-production-10b2.up.railway.app/comments/${commentId}`)); // Create an array of HTTP requests to fetch comment data for each comment using its ID
             const commentResponses = await Promise.all(commentRequests); // Store an array of all the responses from the HTTP requests to fetch comment data for each comment
             const comments = await Promise.all(commentResponses.map(response => response.json())); // Store an array of comment objects
             setComments(comments); // Set the comments state to be the array of comment objects
@@ -309,7 +309,6 @@ export function Post() {
     }
 
     async function deletePost(event) {
-        console.log(post._id);
         const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${post._id}`, {
             method: "DELETE",
             headers: {
@@ -323,16 +322,15 @@ export function Post() {
     }
 
     if(localStorage.getItem("token") !== null) { // User is logged in
-        console.log(post.liked_by);
         return (
             <div id="content">
                 <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
-                {showErrorPopup && (<ErrorPopup message={errorMessage} />)}
+                {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
                 {showDeletePostConfirmation && (<DeleteConfirmation type="post" onConfirm={deletePost} onCancel={() => setShowDeletePostConfirmation(false)} />)}
                 {showDeleteCommentConfirmation && (<DeleteConfirmation type="comment" onConfirm={() => deleteComment(commentToBeDeleted)} onCancel={() => setShowDeleteCommentConfirmation(false)} />)}
                 <div id="post">
                     <span id="title">{post.title}</span>
-                    <span>{post.content}</span>
+                    <span id="post-content">{post.content}</span>
                     <span>Posted by <a href={`/users/${user._id}`} id="user-link">{user.username}</a>  on {formatDate(post.date)}</span>
                     <div id="post-like-counter">
                         <button id="post-like-button" type="button" onClick={() => likeButtonHandler()} className="material-symbols-outlined">thumb_up</button>
@@ -344,24 +342,30 @@ export function Post() {
                     </div>
                     <span id="title">Comments</span>
                     <form onSubmit={handleCommentSubmit} id="comment-form">
-                        <input id="comment-input" type="textarea" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></input>
+                        <textarea id="comment-input" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></textarea>
                         <button type="submit">Send Comment</button>
                     </form>
                     <div>
                         {comments.length === 0 && (<span>There are no comments.</span>)}
                     </div>
-                    {comments.map((comment) => {
-                        return (
-                        <div>
+                </div>
+                {comments.map((comment) => {
+                    console.log(commentUsers)
+                    return (
+                        <div id="comment">
                             {comment && (<span>{comment.content}</span>)}
                             <span>Posted by <a href={`/users/${comment.user}`} id="user-link">{commentUsers[comment.user]}</a> on {formatDate(comment.date)}</span>
-                            {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/comments/${comment._id}/edit`}}>Edit Comment</button>)}
-                            {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button">Delete Comment</button>)}
-                            <button type="button" onClick={likeCommentHandler} id={comment._id} className="material-symbols-outlined">thumb_up</button>
+                            <div id="comment-like-counter">
+                                <button type="button" onClick={likeCommentHandler} id={comment._id} className="material-symbols-outlined">thumb_up</button>
+                                {!comment.liked_by ? (<span>0</span>) : (<span>{comment.liked_by.length}</span>)}
+                            </div>
+                            <div id="modify-comment-actions">
+                                {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/comments/${comment._id}/edit`}} className="material-symbols-outlined" id="edit-comment-button">edit</button>)}
+                                {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button" className="material-symbols-outlined" id="delete-comment-button">delete</button>)}
+                            </div>
                         </div>
-                        )
-                    })}
-                </div>
+                    )
+                })}
             </div>
         );
     } else { // User is not logged in
