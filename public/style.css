@@ -8,10 +8,11 @@ html {
     font-size: 10px;
     font-family: 'Poppins', sans-serif;
     --accent-color: #3457D5;
-    --main-text-color: #747474;
+    --content-text-color: #444444;
     --box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     --error-color: #de4343;
     --regular-text-size: 1.6rem;
+    --border-radius: 0.5rem;
 }
 
 body {
@@ -72,9 +73,9 @@ span {
 
 #error-popup {
     position: sticky;
-    top: 10rem;
+    top: 1rem;
     background-color: var(--error-color);
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius);
     z-index: 9999;
     width: 15%;
     display: flex;
@@ -132,13 +133,13 @@ button {
     color: white;
     background: var(--accent-color);
     border: none;
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius);
     font-family: inherit;
     font-size: inherit;
     cursor: pointer;
 }
 
-#post {
+#post, #comment {
     width: 50%;
     display: flex;
     flex-direction: column;
@@ -147,7 +148,7 @@ button {
     background: white;
     box-shadow: var(--box-shadow);
     padding: 2rem;
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius);
     gap: 1.5rem;
 }
 
@@ -166,26 +167,28 @@ a {
     font-size: calc(1.5 * var(--regular-text-size));
 }
 
-#post-like-counter {
+#post-like-counter, #comment-like-counter {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
 }
 
-#modify-post-actions {
+#modify-post-actions, #modify-comment-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-#post-like-button, #edit-post-button, #delete-post-button {
+#post-like-button, #edit-post-button, #delete-post-button, #comment-like-counter button, #delete-comment-button, #edit-comment-button {
     background: transparent;
     color: var(--accent-color);
 }
 
 /* Styling for delete confirmation popup */
 #delete-confirmation-popup {
+    position: sticky;
+    top: 1rem;
     width: 15%;
     background: white;
     padding: 2rem;
@@ -195,7 +198,7 @@ a {
     justify-content: space-between;
     align-items: center;
     gap: 2rem;
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius);
 }
 
 #delete-confirmation-popup #buttons {
@@ -217,12 +220,14 @@ a {
     width: 100%;
 }
 
-#comment-input {
+textarea {
     height: 10rem;
     width: 100%;
-    padding: 0;
-    border: none;
-    text-align: left;
+    padding: 1rem;
     font-family: inherit;
     padding-left: 1rem;
+    color: var(--content-text-color);
+    border: 0.1rem solid gray;
+    border-radius: var(--border-radius);
+    font-size: inherit;
 }
