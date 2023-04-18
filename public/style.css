@@ -33,7 +33,7 @@ span {
     width: 100%;
 }
 
-#content {
+div[id="content"] {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -116,7 +116,10 @@ span {
     'FILL' 0,
     'wght' 400,
     'GRAD' 0,
-    'opsz' 48
+    'opsz' 48;
+    background: transparent;
+    color: var(--accent-color);
+    padding: 0;
 }
 
 /* Mateiral icon styling (filled) */
@@ -125,10 +128,13 @@ span {
     'FILL' 1,
     'wght' 400,
     'GRAD' 0,
-    'opsz' 48
+    'opsz' 48;
+    background: transparent;
+    color: var(--accent-color);
 }
 
 button {
+    max-width: fit-content;
     padding: 1rem;
     color: white;
     background: var(--accent-color);
@@ -139,7 +145,7 @@ button {
     cursor: pointer;
 }
 
-#post, #comment {
+#post, #comment, #user {
     width: 50%;
     display: flex;
     flex-direction: column;
@@ -156,12 +162,12 @@ a {
     text-decoration: none;
 }
 
-#user-link {
+#user-link, #sign-up-link, #login-link {
     color: var(--accent-color);
     font-weight: bold;
 }
 
-#post #title {
+a[id="title"], span[id="title"], #form-title {
     font-weight: bold;
     color: var(--accent-color);
     font-size: calc(1.5 * var(--regular-text-size));
@@ -171,18 +177,14 @@ a {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 1rem;
+    gap: 1.7rem;
 }
 
 #modify-post-actions, #modify-comment-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-#post-like-button, #edit-post-button, #delete-post-button, #comment-like-counter button, #delete-comment-button, #edit-comment-button {
-    background: transparent;
-    color: var(--accent-color);
+    gap: 1rem;
 }
 
 /* Styling for delete confirmation popup */
@@ -213,21 +215,111 @@ a {
 }
 /* End styling for delete confirmation popup */
 
-#comment-form {
+#comment-form, #edit-post-form, #edit-comment-form, #edit-settings-form, #new-post-form {
     display: flex;
     flex-direction: column;
     gap: 2rem;
     width: 100%;
 }
 
-textarea {
-    height: 10rem;
-    width: 100%;
-    padding: 1rem;
+input[type="text"], input[type="password"] {
+    max-width: 100%;
+    padding: 0.5rem;
     font-family: inherit;
-    padding-left: 1rem;
-    color: var(--content-text-color);
+    padding-left: 0.5rem;
+    color: black;
     border: 0.1rem solid gray;
     border-radius: var(--border-radius);
     font-size: inherit;
+    resize: none;
+}
+
+textarea {
+    min-height: 10rem;
+    height: auto;
+    max-width: 100%;
+    padding: 0.5rem;
+    font-family: inherit;
+    padding-left: 0.5rem;
+    color: black;
+    border: 0.1rem solid gray;
+    border-radius: var(--border-radius);
+    font-size: inherit;
+    resize: none;
+}
+
+#form-container {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    box-shadow: var(--box-shadow);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    gap: 1.5rem;
+}
+
+#edit-post-form {
+    max-width: 100%;
+}
+
+#label-input-pair {
+    gap: 0.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+#label-checkbox-pair {
+    gap: 0.5rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+input[type="checkbox"] {
+    width: 1.25em; /* em is relative to the size of the parent element */
+    height: 1.25em;
+    font-size: 1.25rem;
+    padding: 0;
+    margin: 0;
+}
+
+label {
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+textarea[id="content"] {
+    height: auto;
+}
+
+#login-form-container, #sign-up-form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    box-shadow: var(--box-shadow);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    gap: 1.5rem;
+}
+
+#login-form, #sign-up-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2rem;
+    width: 100%;
+}
+
+#login-form-container button, #sign-up-form-container button, #sign-up-form span, #login-form span {
+    align-self: center;
+}
+
+input[id="title"] {
+
 }
