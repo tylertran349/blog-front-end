@@ -77,15 +77,19 @@ export function EditComment() {
     }
 
     return (
-        <div>
+        <div id="content">
             <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
             {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
-            <span>Edit Comment</span>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="content">Enter text</label>
-                <textarea id="content" placeholder="Text" value={content} onChange={(e) => setContent(e.target.value)}></textarea>
-                <button type="submit">Save</button>
-            </form>
+            <div id="form-container">
+                <span id="form-title">Edit Comment</span>
+                <form id="edit-comment-form" onSubmit={handleSubmit}>
+                    <div id="label-input-pair">
+                        <label htmlFor="content">Enter text</label>
+                        <textarea rows="10" id="content" placeholder="Text" value={content} onChange={(e) => setContent(e.target.value)}></textarea>
+                    </div>
+                    <button type="submit">Save</button>
+                </form>
+            </div>
         </div>
     )
 }

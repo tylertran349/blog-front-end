@@ -50,16 +50,22 @@ export function Login() {
         <div id="content">
             <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
             {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
-            <span>Login</span>
-            {(getLoggedInUser()) && (<span>You are already logged in.</span>)}
-            {(!getLoggedInUser()) && (<form onSubmit={handleSubmit}>
-                <label htmlFor="username">Enter username</label>
-                <input id="username" type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)}></input>
-                <label htmlFor="password">Enter password</label>
-                <input id="password" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}></input>
-                <button type="submit">Sign In</button>
-            </form>)}
-            {(!getLoggedInUser()) && (<span>Don't have an account? <a href="/sign-up">Sign Up</a></span>)}
+            <div id="login-form-container">
+                <span id="form-title">Login</span>
+                {(getLoggedInUser()) && (<span>You are already logged in.</span>)}
+                {(!getLoggedInUser()) && (<form id="login-form" onSubmit={handleSubmit}>
+                    <div id="label-input-pair">
+                        <label htmlFor="username">Enter username</label>
+                        <input id="username" type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)}></input>
+                    </div>
+                    <div id="label-input-pair">
+                        <label htmlFor="password">Enter password</label>
+                        <input id="password" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}></input>
+                    </div>
+                    <button type="submit">Sign In</button>
+                    {(!getLoggedInUser()) && (<span>Don't have an account? <a href="/sign-up" id="sign-up-link">Sign Up</a></span>)}
+                </form>)}
+            </div>
         </div>
     );
 }

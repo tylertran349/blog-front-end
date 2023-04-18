@@ -64,21 +64,33 @@ export function Signup() {
         <div id="content">
             <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
             {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
-            <span>Sign Up</span>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="username">Enter username</label>
-                <input id="username" type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} onKeyDown={(e) => { if(e.key === "Enter") { e.preventDefault() }}}></input>
-                <label htmlFor="first-name">Enter first name</label>
-                <input id="first-name" type="text" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} onKeyDown={(e) => { if(e.key === "Enter") { e.preventDefault() }}}></input>
-                <label htmlFor="last-name">Enter last name</label>
-                <input id="last-name" type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} onKeyDown={(e) => { if(e.key === "Enter") { e.preventDefault() }}}></input>
-                <label htmlFor="password">Enter password</label>
-                <input id="password" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => { if(e.key === "Enter") { e.preventDefault() }}}></input>
-                <label htmlFor="confirm-password">Confirm password</label>
-                <input id="confirm-password" type="password" placeholder="Re-enter password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} onKeyDown={(e) => { if(e.key === "Enter") { e.preventDefault() }}}></input>
-                <button type="submit">Sign Up</button>
-                <span>Have an account? <a href="/login">Login</a></span>
-            </form>
+            <div id="sign-up-form-container">
+                <span id="form-title">Sign Up</span>
+                <form id="sign-up-form" onSubmit={handleSubmit}>
+                    <div id="label-input-pair">
+                        <label htmlFor="username">Enter username</label>
+                        <input id="username" type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} onKeyDown={(e) => { if(e.key === "Enter") { e.preventDefault() }}}></input>
+                    </div>
+                    <div id="label-input-pair">
+                        <label htmlFor="first-name">Enter first name</label>
+                        <input id="first-name" type="text" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)} onKeyDown={(e) => { if(e.key === "Enter") { e.preventDefault() }}}></input>
+                    </div>
+                    <div id="label-input-pair">
+                        <label htmlFor="last-name">Enter last name</label>
+                        <input id="last-name" type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)} onKeyDown={(e) => { if(e.key === "Enter") { e.preventDefault() }}}></input>
+                    </div>
+                    <div id="label-input-pair">
+                        <label htmlFor="password">Enter password</label>
+                        <input id="password" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => { if(e.key === "Enter") { e.preventDefault() }}}></input>
+                    </div>
+                    <div id="label-input-pair">
+                        <label htmlFor="confirm-password">Confirm password</label>
+                        <input id="confirm-password" type="password" placeholder="Re-enter password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} onKeyDown={(e) => { if(e.key === "Enter") { e.preventDefault() }}}></input>
+                    </div>
+                    <button type="submit">Sign Up</button>
+                    <span>Have an account? <a href="/login" id="login-link">Login</a></span>
+                </form>
+            </div>
         </div>
     );
 }

@@ -170,40 +170,60 @@ export function Settings() {
     }
 
     return (
-        <div>
+        <div id="content">
             <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
             {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
             {showDeleteConfirmation && (<DeleteConfirmation type="account" onConfirm={deleteAccount} onCancel={() => setShowDeleteConfirmation(false)} />)}
-            <form onSubmit={handleSettingsChange}>
-                <span>Change User Settings</span>
-                <label htmlFor="username">Enter username</label>
-                <input id="username" type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)}></input>
-                <label htmlFor="firstName">Enter first name</label>
-                <input id="firstName" type="text" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)}></input>
-                <label htmlFor="lastName">Enter last name</label>
-                <input id="lastName" type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)}></input>
-                <button type="submit">Save</button>
-            </form>
-            <form onSubmit={handlePasswordChange}>
-                <span>Change Password</span>
-                <label htmlFor="oldPassword">Enter current password</label>
-                <input id="oldPassword" type="password" placeholder="Current pasword" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)}></input>
-                <label htmlFor="newPassword">Enter new password</label>
-                <input id="newPassword" type="password" placeholder="New password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}></input>
-                <label htmlFor="confirmNewPassword">Confirm new password</label>
-                <input id="confirmNewPassword" type="password" placeholder="Re-enter new password" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)}></input>
-                <button type="submit">Save Password</button>
-            </form>
-            {isAdmin && (<span>You are already an admin.</span>)}
-            {!isAdmin && (
-                <form onSubmit={changeAdminStatus}>
-                    <span>Become an Admin</span>
-                    <label htmlFor="adminPasscode">Enter admin passcode</label>
-                    <input id="adminPasscode" type="password" placeholder="Admin passcode" value={adminPasscode} onChange={(e) => setAdminPasscode(e.target.value)}></input>
-                    <button type="submit">Submit Passcode</button>
+            <div id="form-container">
+                <span id="form-title">Change User Settings</span>
+                <form id="edit-settings-form" onSubmit={handleSettingsChange}>
+                    <div id="label-input-pair">
+                        <label htmlFor="username">Enter username</label>
+                        <input id="username" type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)}></input>
+                    </div>
+                    <div id="label-input-pair">
+                        <label htmlFor="firstName">Enter first name</label>
+                        <input id="firstName" type="text" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)}></input>
+                    </div>
+                    <div id="label-input-pair">
+                        <label htmlFor="lastName">Enter last name</label>
+                        <input id="lastName" type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)}></input>
+                    </div>
+                    <button type="submit">Save</button>
                 </form>
-            )}
-            <button onClick={() => setShowDeleteConfirmation(true)}>Delete Account</button>
+            </div>
+            <div id="form-container">
+                <span id="form-title">Change Password</span>
+                <form id="edit-settings-form" onSubmit={handlePasswordChange}>
+                    <div id="label-input-pair">
+                        <label htmlFor="oldPassword">Enter current password</label>
+                        <input id="oldPassword" type="password" placeholder="Current pasword" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)}></input>
+                    </div>
+                    <div id="label-input-pair">
+                        <label htmlFor="newPassword">Enter new password</label>
+                        <input id="newPassword" type="password" placeholder="New password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}></input>
+                    </div>
+                    <div id="label-input-pair">
+                        <label htmlFor="confirmNewPassword">Confirm new password</label>
+                        <input id="confirmNewPassword" type="password" placeholder="Re-enter new password" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)}></input>
+                    </div>
+                    <button type="submit">Save</button>
+                </form>
+            </div>
+            <div id="form-container">
+                <span id="form-title">Become an Admin</span>
+                {isAdmin && (<span>You are already an admin.</span>)}
+                {!isAdmin && (
+                    <form id="edit-settings-form" onSubmit={changeAdminStatus}>
+                        <div id="label-input-pair">
+                            <label htmlFor="adminPasscode">Enter admin passcode</label>
+                            <input id="adminPasscode" type="password" placeholder="Admin passcode" value={adminPasscode} onChange={(e) => setAdminPasscode(e.target.value)}></input>
+                        </div>
+                        <button type="submit">Submit Passcode</button>
+                    </form>
+                )}
+            </div>
+            <button id="warning-button" onClick={() => setShowDeleteConfirmation(true)}>Delete Account</button>
         </div>
     );
 }

@@ -5,6 +5,8 @@ export function Logout() {
     window.location.href = "/"; // Redirect user back to home page after log out is successful
 
     return (
-        <span>Logging out...</span>
+        <div id="content">
+            <span>Logging out...</span>
+        </div>
     );
 }

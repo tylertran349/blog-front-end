@@ -142,7 +142,7 @@ export function Post() {
                     }),
                 });
                 if(response.ok) {
-                    document.querySelector('#post-like-button').style.fontVariationSettings = `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48`;
+                    document.querySelector('#post-like-button').style.fontVariationSettings = `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Unfilled thumbs up = not currently liked
                     setShowErrorPopup(false);
                     fetchPost();
                 } else {
@@ -171,7 +171,7 @@ export function Post() {
                     }),
                 });
                 if(response.ok) {
-                    document.querySelector('#post-like-button').style.fontVariationSettings = `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48`;
+                    document.querySelector('#post-like-button').style.fontVariationSettings = `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Filled thumbs up = currently liked
                     setShowErrorPopup(false);
                     fetchPost();
                 } else {
@@ -254,7 +254,7 @@ export function Post() {
                     }),
                 });
                 if(response.ok) {
-                    event.target.textContent = "Like Comment";
+                    event.target.style.fontVariationSettings = `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Filled thumbs up = currently liked
                     setShowErrorPopup(false);
                     fetchComments();
                 } else {
@@ -284,7 +284,7 @@ export function Post() {
                     }),
                 });
                 if(response.ok) {
-                    event.target.textContent = "Comment Liked";
+                    event.target.style.fontVariationSettings = `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Filled thumbs up = currently liked
                     setShowErrorPopup(false);
                     fetchComments();
                 } else {
@@ -340,9 +340,11 @@ export function Post() {
                         {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${postId}/edit`}} className="material-symbols-outlined" id="edit-post-button">edit</button>)}
                         {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button id="delete-post-button" type="button" onClick={() => setShowDeletePostConfirmation(true)} className="material-symbols-outlined">delete</button>)}
                     </div>
-                    <span id="title">Comments</span>
                     <form onSubmit={handleCommentSubmit} id="comment-form">
-                        <textarea id="comment-input" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></textarea>
+                        <div id="label-input-pair">
+                            <label htmlFor="comment-input">Comments</label>
+                            <textarea id="comment-input" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></textarea>
+                        </div>
                         <button type="submit">Send Comment</button>
                     </form>
                     <div>
@@ -350,7 +352,6 @@ export function Post() {
                     </div>
                 </div>
                 {comments.map((comment) => {
-                    console.log(commentUsers)
                     return (
                         <div id="comment">
                             {comment && (<span>{comment.content}</span>)}
@@ -378,23 +379,27 @@ export function Post() {
                     <span>{post.content}</span>
                     <span>Posted by <a href={`/users/${user._id}`} id="user-link">{user.username}</a> on {formatDate(post.date)}</span>
                     <div id="post-like-counter">
-                        <span className="material-symbols-outlined">thumb_up</span>
-                        
+                        <button id="post-like-button" type="button" onClick={() => likeButtonHandler()} className="material-symbols-outlined">thumb_up</button>
+                        {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
                     </div>
                     <span id="title">Comments</span>
-                    <span><a href="/login">Login</a> to comment.</span>
+                    <span><a href="/login" id="login-link">Login</a> to comment.</span>
                     <div>
                         {comments.length === 0 && (<span>There are no comments.</span>)}
                     </div>
-                    {comments.map((comment) => {
-                        return (
-                        <div>
-                            <span>{comment.content}</span>
-                            <span>Posted by <a href={`/users/${comment.user}`} id="user-link">{commentUsers[comment.user]}</a> on {formatDate(comment.date)}</span>
-                        </div>
-                        )
-                    })}
                 </div>
+                {comments.map((comment) => {
+                    return (
+                    <div id="comment">
+                        <span>{comment.content}</span>
+                        <span>Posted by <a href={`/users/${comment.user}`} id="user-link">{commentUsers[comment.user]}</a> on {formatDate(comment.date)}</span>
+                        <div id="comment-like-counter">
+                            <span className="material-symbols-outlined">thumb_up</span>
+                            {!comment.liked_by ? (<span>0</span>) : (<span>{comment.liked_by.length}</span>)}
+                        </div>
+                    </div>
+                    )
+                })}
             </div>
         );
     }
