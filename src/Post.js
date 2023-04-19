@@ -76,12 +76,15 @@ export function Post() {
             const comments = await Promise.all(commentResponses.map(response => response.json())); // Store an array of comment objects
             setComments(comments); // Set the comments state to be the array of comment objects
             setShowErrorPopup(false);
+            fetchCommentUsers(comments); // Pass comments array initialized above to fetchCommentUsers() to ensure fetchCommentUsers() has the most up-to-date comment data
         } else {
             const result = await response.json();
             setErrorMessage(result.error);
             setShowErrorPopup(true);
         }
+    }
 
+    async function fetchCommentUsers(comments) {
         // Fetch usernames for all comments
         const userIds = comments.map(comment => comment.user); // Create an array of all the user IDs for the entire list of comments
         const userRequests = userIds.map(userId => fetch(`https://blog-production-10b2.up.railway.app/users/${userId}`)); // For each user ID, create an array of HTTP requests to fetch user data for each user using their ID
@@ -322,7 +325,6 @@ export function Post() {
     }
 
     if(localStorage.getItem("token") !== null) { // User is logged in
-        console.log(commentUsers);
         return (
             <div id="content">
                 <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
