@@ -322,6 +322,7 @@ export function Post() {
     }
 
     if(localStorage.getItem("token") !== null) { // User is logged in
+        console.log(commentUsers);
         return (
             <div id="content">
                 <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
@@ -362,7 +363,7 @@ export function Post() {
                             </div>
                             <div id="modify-comment-actions">
                                 {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/comments/${comment._id}/edit`}} className="material-symbols-outlined" id="edit-comment-button">edit</button>)}
-                                {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button" className="material-symbols-outlined" id="delete-comment-button">delete</button>)}
+                                {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button" className="material-symbols-outlined">delete</button>)}
                             </div>
                         </div>
                     )
