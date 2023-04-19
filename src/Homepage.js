@@ -98,7 +98,7 @@ export function Homepage() {
                                 <span id="post-content">{post.content}</span>
                                 <span>Posted by <a href={`/users/${post.user}`} id="user-link">{usernames[post.user]}</a> on {formatDate(post.date)}</span>
                                 <div id="post-like-counter">
-                                    <span class="material-symbols-outlined">thumb_up</span>
+                                    <span className="material-symbols-outlined">thumb_up</span>
                                     <span>{post.liked_by.length}</span>
                                 </div>
                             </div>
@@ -121,7 +121,7 @@ export function Homepage() {
                         <span id="post-content">{post.content}</span>
                         <span>Posted by <a href={`/users/${post.user}`} id="user-link">{usernames[post.user]}</a> on {formatDate(post.date)}</span>
                         <div id="post-like-counter">
-                            <span class="material-symbols-outlined">thumb_up</span>
+                            <span className="material-symbols-outlined">thumb_up</span>
                             <span>{post.liked_by.length}</span>
                         </div>
                     </div>
