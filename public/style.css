@@ -40,6 +40,7 @@ div[id="content"] {
     align-items: center;
     gap: 3rem;
     font-size: var(--regular-text-size);
+    margin-bottom: 3rem;
 }
 
 #nav-bar {
