@@ -90,7 +90,7 @@ export function Homepage() {
                 {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
                 <a href={"/new-post"}><button id="new-post-button">Create a New Post</button></a>
                 {posts.length === 0 && (<span>There are no blog posts.</span>)}
-                {posts.map((post) => {
+                {posts.slice().reverse().map((post) => {
                     if(post.published || (getLoggedInUser() && getLoggedInUser()._id === post.user)) { // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
                         return (
                             <div id="post">
@@ -115,7 +115,7 @@ export function Homepage() {
                 <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
                 {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
                 {posts.length === 0 && (<span>There are no blog posts.</span>)}
-                {posts.filter((post) => post.published).map((post) => (
+                {posts.filter((post) => post.published).slice().reverse().map((post) => (
                     <div id="post">
                         <a href={`/posts/${post._id}`} id="title">{post.title}</a>
                         <span id="post-content">{post.content}</span>
