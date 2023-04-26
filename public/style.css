@@ -24,7 +24,11 @@ span {
 }
 
 #root {
+    min-height: 100vh;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 div[id="content"] {
@@ -323,13 +327,13 @@ textarea[id="content"] {
     color: var(--accent-color);
     background: white;
     box-shadow: var(--box-shadow);
+    padding: 1rem;
 }
 
 #footer-contents {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 1rem;
 }
 
 /* GitHub footer icon styling */
