@@ -137,7 +137,7 @@ export function Settings() {
         });
         if(response.ok) {
             setShowErrorPopup(false);
-            window.location.href = `/users/${userId}/settings`;
+            window.location.href = "/logout"; // Log out user once they become admin so that they are forced to log in again, creating a new updated JWT with the correct admin status
         } else {
             const result = await response.json();
             let errorText = "";
