@@ -77,7 +77,7 @@ export function User() {
             {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
             <span id="title">{username}</span>
             {posts.length === 0 && (<span>This user has no posts.</span>)}
-            {posts.filter((post) => post.published || (getLoggedInUser() && post.user === getLoggedInUser()._id)).map((post) => ( // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
+            {posts.filter((post) => post.published || (getLoggedInUser() && post.user === getLoggedInUser()._id)).slice().reverse().map((post) => ( // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
                 <div id="post">
                     <a id="title" href={`/posts/${post._id}`}>{post.published ? post.title : `${post.title} (PRIVATE)`}</a>
                     <span>{post.content}</span>
