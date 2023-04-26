@@ -354,7 +354,7 @@ export function Post() {
                         {comments.length === 0 && (<span>There are no comments.</span>)}
                     </div>
                 </div>
-                {comments.map((comment) => {
+                {comments.slice().reverse().map((comment) => {
                     return (
                         <div id="comment">
                             {comment && (<span>{comment.content}</span>)}
@@ -391,7 +391,7 @@ export function Post() {
                         {comments.length === 0 && (<span>There are no comments.</span>)}
                     </div>
                 </div>
-                {comments.map((comment) => {
+                {comments.slice().reverse().map((comment) => {
                     return (
                     <div id="comment">
                         <span>{comment.content}</span>
