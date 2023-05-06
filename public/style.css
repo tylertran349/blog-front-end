@@ -265,9 +265,11 @@ textarea {
 }
 
 #label-input-pair {
+    min-width: 100%;
     gap: 0.5rem;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
 }
 
 #label-checkbox-pair {
