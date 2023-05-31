@@ -46,18 +46,6 @@ export function Homepage() {
         setPosts(data);
     }
 
-    async function fetchPosts() {
-        const response = await fetch("https://blog-production-10b2.up.railway.app/posts");
-        const data = await response.json();
-        if(!response.ok) {
-            setErrorMessage(data.error);
-            setShowErrorPopup(true);
-        } else {
-            setShowErrorPopup(false);
-        }
-        setPosts(data);
-    }
-
     function formatDate(dateString) {
         const date = new Date(dateString);
         const hours = date.getHours() % 12;
