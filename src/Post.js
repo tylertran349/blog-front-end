@@ -8,54 +8,31 @@ import { NavBar } from "./NavBar";
 export function Post() {
     const { postId } = useParams(); // Extract post ID from URL parameter
     const [post, setPost] = useState({}); // Store data of current blog post
-    const [user, setUser] = useState({}); // Store user that made the current blog post
-    const [comments, setComments] = useState([]); // Stores array of comment objects, each containing the comment's data
-    const [commentUsers, setCommentUsers] = useState({}); // Stores key-value pairs of user IDs (key) and username (value) for every comment
     const [newComment, setNewComment] = useState("");
     const [showDeletePostConfirmation, setShowDeletePostConfirmation] = useState(false);
     const [showDeleteCommentConfirmation, setShowDeleteCommentConfirmation] = useState(false);
     const [commentToBeDeleted, setCommentToBeDeleted] = useState("");
     const [showErrorPopup, setShowErrorPopup] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [loadingStatus, setLoadingStatus] = useState("true"); // Set to true of API request to fetch blog post is not done yet, false otherwise
 
     useEffect(() => {
         fetchPost();
     }, []);
-
-    useEffect(() => {
-        if(post.user) {
-            fetchUser();
-        }
-    }, [post]);
-
-    useEffect(() => {
-        fetchComments();
-    }, [user]);
-
-    async function fetchUser() {
-        const response = await fetch(`https://blog-production-10b2.up.railway.app/users/${post.user}`);
-        if(response.ok) {
-            const user = await response.json();
-            setUser(user);
-            setShowErrorPopup(false);
-        } else {
-            const result = await response.json();
-            setErrorMessage(result.error);
-            setShowErrorPopup(true);
-        }
-    }
 
     async function fetchPost() {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`);
         if(response.ok) {
             const post = await response.json();
             setPost(post);
+            setLoadingStatus(false);
             setShowErrorPopup(false);
         } else {
             const result = await response.json();
             setErrorMessage(result.error);
             setShowErrorPopup(true);
         }
+        console.log(post);
     }
 
     function formatDate(dateString) {
@@ -65,34 +42,6 @@ export function Post() {
         const period = date.getHours() >= 12 ? "PM" : "AM";
         const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} at ${hours}:${minutes} ${period}`;
         return formattedDate;
-    }
-
-    async function fetchComments() {
-        const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}/comments?$expand=user`); // Fetch list of comments for the post
-        if(response.ok) {
-            const commentIds = await response.json();
-            const commentRequests = await commentIds.map(commentId => fetch(`https://blog-production-10b2.up.railway.app/comments/${commentId}`)); // Create an array of HTTP requests to fetch comment data for each comment using its ID
-            const commentResponses = await Promise.all(commentRequests); // Store an array of all the responses from the HTTP requests to fetch comment data for each comment
-            const comments = await Promise.all(commentResponses.map(response => response.json())); // Store an array of comment objects
-            setComments(comments); // Set the comments state to be the array of comment objects
-            setShowErrorPopup(false);
-            fetchCommentUsers(comments); // Pass comments array initialized above to fetchCommentUsers() to ensure fetchCommentUsers() has the most up-to-date comment data
-        } else {
-            const result = await response.json();
-            setErrorMessage(result.error);
-            setShowErrorPopup(true);
-        }
-    }
-
-    async function fetchCommentUsers(comments) {
-        // Fetch usernames for all comments
-        const userIds = comments.map(comment => comment.user); // Create an array of all the user IDs for the entire list of comments
-        const userRequests = userIds.map(userId => fetch(`https://blog-production-10b2.up.railway.app/users/${userId}`)); // For each user ID, create an array of HTTP requests to fetch user data for each user using their ID
-        const userResponses = await Promise.all(userRequests); // Store an array of all the user API call responses
-        const users = await Promise.all(userResponses.map(response => response.json())); // Store an array of user objects
-        const userMap = {}; // Create a JavaScript object that maps user IDs to usernames
-        users.forEach(user => userMap[user._id] = user.username); // For each user object in the users array, create a new map entry that maps the user ID to its corresponding username
-        setCommentUsers(userMap);
     }
 
     async function handleCommentSubmit(event) {
@@ -110,7 +59,7 @@ export function Post() {
         });
         if(response.ok) {
             setNewComment(""); // Set newComment to blank string in order to reset text input after form submission
-            fetchComments();
+            fetchPost();
             setShowErrorPopup(false);
         } else {
             const result = await response.json();
@@ -127,7 +76,7 @@ export function Post() {
         }
     }
 
-    async function likeButtonHandler() {
+    async function likePostHandler() {
         const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`);
         if(response.ok) {
             const postData = await response.json();
@@ -228,7 +177,7 @@ export function Post() {
             },
         });
         if(response.ok) {
-            fetchComments();
+            fetchPost();
             setShowDeleteCommentConfirmation(false);
             setCommentToBeDeleted("");
             setShowErrorPopup(false);
@@ -259,7 +208,8 @@ export function Post() {
                 if(response.ok) {
                     event.target.style.fontVariationSettings = `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Filled thumbs up = currently liked
                     setShowErrorPopup(false);
-                    fetchComments();
+                    fetchPost();
+                    console.log("Comment was liked");
                 } else {
                     const result = await response.json();
                     let errorText = "";
@@ -289,7 +239,7 @@ export function Post() {
                 if(response.ok) {
                     event.target.style.fontVariationSettings = `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Filled thumbs up = currently liked
                     setShowErrorPopup(false);
-                    fetchComments();
+                    fetchPost();
                 } else {
                     const result = await response.json();
                     let errorText = "";
@@ -324,86 +274,54 @@ export function Post() {
         window.location.href = "/"; // Redirect user back to home page after they delete the post
     }
 
-    if(localStorage.getItem("token") !== null) { // User is logged in
-        return (
-            <div id="content">
-                <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
-                {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
-                {showDeletePostConfirmation && (<DeleteConfirmation type="post" onConfirm={deletePost} onCancel={() => setShowDeletePostConfirmation(false)} />)}
-                {showDeleteCommentConfirmation && (<DeleteConfirmation type="comment" onConfirm={() => deleteComment(commentToBeDeleted)} onCancel={() => setShowDeleteCommentConfirmation(false)} />)}
-                <div id="post">
-                    <span id="title">{post.title}</span>
-                    <span id="post-content">{post.content}</span>
-                    <span>Posted by <a href={`/users/${user._id}`} id="user-link">{user.username}</a>  on {formatDate(post.date)}</span>
-                    <div id="post-like-counter">
-                        <button id="post-like-button" type="button" onClick={() => likeButtonHandler()} className="material-symbols-outlined">thumb_up</button>
-                        {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
-                    </div>
-                    <div id="modify-post-actions">
-                        {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${postId}/edit`}} className="material-symbols-outlined" id="edit-post-button">edit</button>)}
-                        {(post.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button id="delete-post-button" type="button" onClick={() => setShowDeletePostConfirmation(true)} className="material-symbols-outlined">delete</button>)}
-                    </div>
-                    <form onSubmit={handleCommentSubmit} id="comment-form">
-                        <div id="label-input-pair">
-                            <label htmlFor="comment-input">Comments</label>
-                            <textarea id="comment-input" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></textarea>
-                        </div>
-                        <button type="submit">Send Comment</button>
-                    </form>
-                    <div>
-                        {comments.length === 0 && (<span>There are no comments.</span>)}
-                    </div>
+    return (
+        <div id="content">
+            <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
+            {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
+            {showDeletePostConfirmation && (<DeleteConfirmation type="post" onConfirm={deletePost} onCancel={() => setShowDeletePostConfirmation(false)} />)}
+            {showDeleteCommentConfirmation && (<DeleteConfirmation type="comment" onConfirm={() => deleteComment(commentToBeDeleted)} onCancel={() => setShowDeleteCommentConfirmation(false)} />)}
+            {!loadingStatus && (<div id="post">
+                <span id="title">{post.title}</span>
+                <span id="post-content">{post.content}</span>
+                <span>Posted by <a href={`/users/${post.user._id}`} id="user-link">{post.user.username}</a> on {formatDate(post.date)}</span>
+                <div id="post-like-counter">
+                    {(localStorage.getItem("token") !== null) && (<button id="post-like-button" type="button" onClick={() => likePostHandler()} className="material-symbols-outlined">thumb_up</button>)}
+                    {(localStorage.getItem("token") === null) && (<span id="post-like-button" className="material-symbols-outlined">thumb_up</span>)}
+                    {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
                 </div>
-                {comments.slice().reverse().map((comment) => {
-                    return (
-                        <div id="comment">
-                            {comment && (<span>{comment.content}</span>)}
-                            <span>Posted by <a href={`/users/${comment.user}`} id="user-link">{commentUsers[comment.user]}</a> on {formatDate(comment.date)}</span>
-                            <div id="comment-like-counter">
-                                <button type="button" onClick={likeCommentHandler} id={comment._id} className="material-symbols-outlined">thumb_up</button>
-                                {!comment.liked_by ? (<span>0</span>) : (<span>{comment.liked_by.length}</span>)}
-                            </div>
-                            <div id="modify-comment-actions">
-                                {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/comments/${comment._id}/edit`}} className="material-symbols-outlined" id="edit-comment-button">edit</button>)}
-                                {(comment.user === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button" className="material-symbols-outlined">delete</button>)}
-                            </div>
-                        </div>
-                    )
-                })}
-            </div>
-        );
-    } else { // User is not logged in
-        return (
-            <div id="content">
-                <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
-                {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
-                <div id="post">
-                    <span id="title">{post.title}</span>
-                    <span>{post.content}</span>
-                    <span>Posted by <a href={`/users/${user._id}`} id="user-link">{user.username}</a> on {formatDate(post.date)}</span>
-                    <div id="post-like-counter">
-                        <button id="post-like-button" type="button" onClick={() => likeButtonHandler()} className="material-symbols-outlined">thumb_up</button>
-                        {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
-                    </div>
-                    <span id="title">Comments</span>
-                    <span><a href="/login" id="login-link">Login</a> to comment.</span>
-                    <div>
-                        {comments.length === 0 && (<span>There are no comments.</span>)}
-                    </div>
+                <div id="modify-post-actions">
+                    {(post.user._id === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${postId}/edit`}} className="material-symbols-outlined" id="edit-post-button">edit</button>)}
+                    {(post.user._id === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button id="delete-post-button" type="button" onClick={() => setShowDeletePostConfirmation(true)} className="material-symbols-outlined">delete</button>)}
                 </div>
-                {comments.slice().reverse().map((comment) => {
-                    return (
+                <form onSubmit={handleCommentSubmit} id="comment-form">
+                    <div id="label-input-pair">
+                        <label htmlFor="comment-input">Comments</label>
+                        <textarea id="comment-input" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></textarea>
+                    </div>
+                    <button type="submit">Send Comment</button>
+                </form>
+                <div>
+                    {(localStorage.getItem("token") === null) && (<span><a href="/login" id="login-link">Login</a> to comment.</span>)}
+                    {post.comments.length === 0 && (<span>There are no comments.</span>)}
+                </div>
+            </div>)}
+            {!loadingStatus && (post.comments.slice().reverse().map((comment) => {
+                return (
                     <div id="comment">
-                        <span>{comment.content}</span>
-                        <span>Posted by <a href={`/users/${comment.user}`} id="user-link">{commentUsers[comment.user]}</a> on {formatDate(comment.date)}</span>
+                        {comment && (<span>{comment.content}</span>)}
+                        <span>Posted by <a href={`/users/${comment.user._id}`} id="user-link">{comment.user.username}</a> on {formatDate(comment.date)}</span>
                         <div id="comment-like-counter">
-                            <span className="material-symbols-outlined">thumb_up</span>
+                            {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likeCommentHandler} id={comment._id} className="material-symbols-outlined">thumb_up</button>)}
+                            {(localStorage.getItem("token") === null) && (<span id={comment._id} className="material-symbols-outlined">thumb_up</span>)}
                             {!comment.liked_by ? (<span>0</span>) : (<span>{comment.liked_by.length}</span>)}
                         </div>
+                        <div id="modify-comment-actions">
+                            {(comment.user._id === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/comments/${comment._id}/edit`}} className="material-symbols-outlined" id="edit-comment-button">edit</button>)}
+                            {(comment.user._id === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button" className="material-symbols-outlined">delete</button>)}
+                        </div>
                     </div>
-                    )
-                })}
-            </div>
-        );
-    }
+                )
+            }))}
+        </div>
+    );
 }
