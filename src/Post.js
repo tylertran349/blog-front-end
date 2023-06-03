@@ -76,73 +76,66 @@ export function Post() {
     }
 
     async function likePostHandler() {
-        const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`);
-        if(response.ok) {
-            const postData = await response.json();
-            setShowErrorPopup(false);
-            if(postData.liked_by.includes(getLoggedInUser()._id)) { // If post is already liked by user
-                let updatedLikedByList = postData.liked_by.filter(item => item !== getLoggedInUser()._id);
-                const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`, {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                    },
-                    body: JSON.stringify({ 
-                        liked_by: updatedLikedByList,
-                    }),
-                });
-                if(response.ok) {
-                    document.querySelector('#post-like-button').style.fontVariationSettings = `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Unfilled thumbs up = not currently liked
-                    setShowErrorPopup(false);
-                    fetchPost();
-                } else {
-                    const result = await response.json();
-                    let errorText = "";
-                    if(result.errors) {
-                        for(let i = 0; i < result.errors.length; i++) {
-                            errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
-                        }
-                    } else {
-                        errorText = result.error;
+        setShowErrorPopup(false);
+        if(post.liked_by.some(user => user._id === getLoggedInUser()._id)) { // If post is already liked by user
+            let updatedLikedByList = post.liked_by.filter(user => user._id !== getLoggedInUser()._id);
+            const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({ 
+                    liked_by: updatedLikedByList,
+                }),
+            });
+            
+            if(response.ok) {
+                document.querySelector('#post-like-button').style.fontVariationSettings = `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Unfilled thumbs up = not currently liked
+                setShowErrorPopup(false);
+                fetchPost();
+            } else {
+                const result = await response.json();
+                let errorText = "";
+                if(result.errors) {
+                    for(let i = 0; i < result.errors.length; i++) {
+                        errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
                     }
-                    setErrorMessage(errorText);
-                    setShowErrorPopup(true);
-                }
-            } else { // If post is not already liked by user
-                let updatedLikedByList = postData.liked_by.concat(getLoggedInUser()._id);
-                const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`, {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                    },
-                    body: JSON.stringify({ 
-                        liked_by: updatedLikedByList,
-                    }),
-                });
-                if(response.ok) {
-                    document.querySelector('#post-like-button').style.fontVariationSettings = `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Filled thumbs up = currently liked
-                    setShowErrorPopup(false);
-                    fetchPost();
                 } else {
-                    const result = await response.json();
-                    let errorText = "";
-                    if(result.errors) {
-                        for(let i = 0; i < result.errors.length; i++) {
-                            errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
-                        }
-                    } else {
-                        errorText = result.error;
-                    }
-                    setErrorMessage(errorText);
-                    setShowErrorPopup(true);
+                    errorText = result.error;
                 }
+                setErrorMessage(errorText);
+                setShowErrorPopup(true);
             }
-        } else {
-            const result = await response.json();
-            setErrorMessage(result.error);
-            setShowErrorPopup(true);
+        } else { // If post is not already liked by user
+            let updatedLikedByList = post.liked_by.concat(getLoggedInUser());
+            const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({ 
+                    liked_by: updatedLikedByList,
+                }),
+            });
+            if(response.ok) {
+                document.querySelector('#post-like-button').style.fontVariationSettings = `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Filled thumbs up = currently liked
+                setShowErrorPopup(false);
+                fetchPost();
+            } else {
+                const result = await response.json();
+                let errorText = "";
+                if(result.errors) {
+                    for(let i = 0; i < result.errors.length; i++) {
+                        errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
+                    }
+                } else {
+                    errorText = result.error;
+                }
+                setErrorMessage(errorText);
+                setShowErrorPopup(true);
+            }
         }
     }
 
@@ -192,8 +185,8 @@ export function Post() {
         const commentData = await response.json();
         if(response.ok) {
             setShowErrorPopup(false);
-            if(commentData.liked_by.includes(getLoggedInUser()._id)) { // If post is already liked by user
-                let updatedLikedByList = commentData.liked_by.filter(item => item !== getLoggedInUser()._id);
+            if(commentData.liked_by.includes(getLoggedInUser())) { // If post is already liked by user
+                let updatedLikedByList = commentData.liked_by.filter(item => item !== getLoggedInUser());
                 const response = await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`, {
                     method: "PATCH",
                     headers: {
@@ -223,7 +216,7 @@ export function Post() {
                     setShowErrorPopup(true);
                 }
             } else {
-                let updatedLikedByList = commentData.liked_by.concat(getLoggedInUser()._id);
+                let updatedLikedByList = commentData.liked_by.concat(getLoggedInUser());
                 const response = await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`, {
                     method: "PATCH",
                     headers: {
