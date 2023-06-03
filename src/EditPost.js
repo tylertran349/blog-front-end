@@ -78,7 +78,6 @@ export function EditPost() {
         }
     }
 
-
     return (
         <div id="content">
             <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
