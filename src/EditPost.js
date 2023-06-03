@@ -46,7 +46,7 @@ export function EditPost() {
         });
         if(response.ok) { // If response is within the range of 200-299 (successful request), then redirect user back to the dedicated page for the post
             setShowErrorPopup(false);
-            window.location.href = `/posts/${postId}`;
+            window.history.back(); // Redirect user back to page that sent them here
         } else {
             const result = await response.json();
             let errorText = "";

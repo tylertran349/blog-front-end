@@ -44,7 +44,7 @@ export function EditComment() {
         console.log(postId);
         if(response.ok) { // If response is within the range of 200-299 (successful request), then redirect user back to the page of the blog post that the comment was made on
             setShowErrorPopup(false);
-            window.location.href = `/posts/${postId}`;
+            window.history.back();
         } else {
             const result = await response.json();
             let errorText = "";
