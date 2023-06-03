@@ -45,7 +45,7 @@ export function User() {
 
     function formatDate(dateString) {
         const date = new Date(dateString);
-        const hours = date.getHours();
+        let hours = date.getHours();
         const minutes = date.getMinutes().toString().padStart(2, "0");
         const period = date.getHours() >= 12 ? "PM" : "AM";
         if(hours === 0) { // If it's midnight (special case)
