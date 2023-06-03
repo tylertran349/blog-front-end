@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import jwt_decode from "jwt-decode";
 import { ErrorPopup } from "./ErrorPopup";
 import { NavBar } from "./NavBar";
+import { DeleteConfirmation } from "./DeleteConfirmation";
 
 export function Homepage() {
     const [posts, setPosts] = useState([]); // An array that stores every post
     const [showErrorPopup, setShowErrorPopup] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [showDeletePostConfirmation, setShowDeletePostConfirmation] = useState(false);
+    const [postToBeDeleted, setPostToBeDeleted] = useState("");
 
     useEffect(() => {
         fetchPosts(); // Get posts by making API call
@@ -113,10 +116,36 @@ export function Homepage() {
         }
     }
 
+    function deletePostHandler(event) {
+        setPostToBeDeleted(event.target.id.toString());
+        setShowDeletePostConfirmation(true);
+    }
+
+    async function deletePost() {
+        const response = await fetch(`https://blog-production-10b2.up.railway.app/posts/${postToBeDeleted}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            },
+        });
+        if(response.ok) {
+            fetchPosts();
+            setShowDeletePostConfirmation(false);
+            setPostToBeDeleted("");
+            setShowErrorPopup(false);
+        } else {
+            const result = await response.json();
+            setErrorMessage(result.error);
+            setShowErrorPopup(true);
+        }
+    }
+
     return (
         <div id="content">
             <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
             {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
+            {showDeletePostConfirmation && (<DeleteConfirmation type="post" onConfirm={deletePost} onCancel={() => setShowDeletePostConfirmation(false)} />)}
             {(localStorage.getItem("token") !== null) && (<a href={"/new-post"}><button id="new-post-button">Create a New Post</button></a>)}
             {posts.length === 0 && (<span>There are no blog posts.</span>)}
             {posts.slice().reverse().map((post) => {
@@ -127,9 +156,13 @@ export function Homepage() {
                             <span id="post-content">{post.content}</span>
                             <span>Posted by <a href={`/users/${post.user._id}`} id="user-link">{post.user.username}</a> on {formatDate(post.date)}</span>
                             <div id="post-like-counter">
-                            {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likePostHandler} id={post._id} className="material-symbols-outlined">thumb_up</button>)}
-                            {(localStorage.getItem("token") === null) && (<span id={post._id} className="material-symbols-outlined">thumb_up</span>)}
-                            {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
+                                {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likePostHandler} id={post._id} className="material-symbols-outlined">thumb_up</button>)}
+                                {(localStorage.getItem("token") === null) && (<span id={post._id} className="material-symbols-outlined">thumb_up</span>)}
+                                {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
+                            </div>
+                            <div id="modify-post-actions">
+                                {(post.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${post._id}/edit`}} className="material-symbols-outlined" id="edit-post-button">edit</button>)}
+                                {(post.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={deletePostHandler} id={post._id} type="button" className="material-symbols-outlined">delete</button>)}
                             </div>
                         </div>
                     );
