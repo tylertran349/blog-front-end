@@ -56,8 +56,6 @@ export function User() {
         const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} at ${hours}:${minutes} ${period}`;
         return formattedDate;
     }
-
-    console.log(user);
     
     return (
         <div id="content">
