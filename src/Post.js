@@ -273,8 +273,8 @@ export function Post() {
                     {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
                 </div>
                 <div id="modify-post-actions">
-                    {(post.user._id === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${postId}/edit`}} className="material-symbols-outlined" id="edit-post-button">edit</button>)}
-                    {(post.user._id === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button id="delete-post-button" type="button" onClick={() => setShowDeletePostConfirmation(true)} className="material-symbols-outlined">delete</button>)}
+                    {(post.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${postId}/edit`}} className="material-symbols-outlined" id="edit-post-button">edit</button>)}
+                    {(post.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button id="delete-post-button" type="button" onClick={() => setShowDeletePostConfirmation(true)} className="material-symbols-outlined">delete</button>)}
                 </div>
                 <form onSubmit={handleCommentSubmit} id="comment-form">
                     <div id="label-input-pair">
@@ -299,8 +299,8 @@ export function Post() {
                             {!comment.liked_by ? (<span>0</span>) : (<span>{comment.liked_by.length}</span>)}
                         </div>
                         <div id="modify-comment-actions">
-                            {(comment.user._id === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={() => {window.location.href=`/comments/${comment._id}/edit`}} className="material-symbols-outlined" id="edit-comment-button">edit</button>)}
-                            {(comment.user._id === getLoggedInUser()._id || getLoggedInUser().is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button" className="material-symbols-outlined">delete</button>)}
+                            {(comment.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={() => {window.location.href=`/comments/${comment._id}/edit`}} className="material-symbols-outlined" id="edit-comment-button">edit</button>)}
+                            {(comment.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button" className="material-symbols-outlined">delete</button>)}
                         </div>
                     </div>
                 )
