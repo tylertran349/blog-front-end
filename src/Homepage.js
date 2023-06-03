@@ -29,9 +29,14 @@ export function Homepage() {
 
     function formatDate(dateString) {
         const date = new Date(dateString);
-        const hours = date.getHours() % 12;
+        const hours = date.getHours();
         const minutes = date.getMinutes().toString().padStart(2, "0");
         const period = date.getHours() >= 12 ? "PM" : "AM";
+        if(hours === 0) { // If it's midnight (special case)
+            hours = 12;
+        } else if(hours > 12) {
+            hours -= 12;
+        }
         const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} at ${hours}:${minutes} ${period}`;
         return formattedDate;
     }
