@@ -181,75 +181,66 @@ export function Post() {
     }
 
     async function likeCommentHandler(event) {
-        const response = await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`);
-        const commentData = await response.json();
-        if(response.ok) {
-            setShowErrorPopup(false);
-            if(commentData.liked_by.includes(getLoggedInUser())) { // If post is already liked by user
-                let updatedLikedByList = commentData.liked_by.filter(item => item !== getLoggedInUser());
-                const response = await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`, {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                    },
-                    body: JSON.stringify({ 
-                        liked_by: updatedLikedByList,
-                    }),
-                });
-                if(response.ok) {
-                    event.target.style.fontVariationSettings = `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Filled thumbs up = currently liked
-                    setShowErrorPopup(false);
-                    fetchPost();
-                    console.log("Comment was liked");
-                } else {
-                    const result = await response.json();
-                    let errorText = "";
-                    if(result.errors) {
-                        for(let i = 0; i < result.errors.length; i++) {
-                            errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
-                        }
-                    } else {
-                        errorText = result.error;
-                    }
-                    setErrorMessage(errorText);
-                    setShowErrorPopup(true);
-                }
+        setShowErrorPopup(false);
+        if(post.comments.find(comment => comment._id === event.target.id).liked_by.some(user => user._id === getLoggedInUser()._id)) { // If comment is already liked by user
+            let updatedLikedByList = post.comments.find(comment => comment._id === event.target.id).liked_by.filter(user => user._id !== getLoggedInUser()._id);
+            const response = await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({ 
+                    liked_by: updatedLikedByList,
+                }),
+            });
+            if(response.ok) {
+                event.target.style.fontVariationSettings = `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Filled thumbs up = currently liked
+                setShowErrorPopup(false);
+                fetchPost();
             } else {
-                let updatedLikedByList = commentData.liked_by.concat(getLoggedInUser());
-                const response = await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`, {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                    },
-                    body: JSON.stringify({ 
-                        content: commentData.content,
-                        liked_by: updatedLikedByList,
-                    }),
-                });
-                if(response.ok) {
-                    event.target.style.fontVariationSettings = `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Filled thumbs up = currently liked
-                    setShowErrorPopup(false);
-                    fetchPost();
-                } else {
-                    const result = await response.json();
-                    let errorText = "";
-                    if(result.errors) {
-                        for(let i = 0; i < result.errors.length; i++) {
-                            errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
-                        }
-                    } else {
-                        errorText = result.error;
+                const result = await response.json();
+                let errorText = "";
+                if(result.errors) {
+                    for(let i = 0; i < result.errors.length; i++) {
+                        errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
                     }
-                    setErrorMessage(errorText);
-                    setShowErrorPopup(true);
+                } else {
+                    errorText = result.error;
                 }
+                setErrorMessage(errorText);
+                setShowErrorPopup(true);
             }
         } else {
-            const result = await response.json();
-            setErrorMessage(result.error);
-            setShowErrorPopup(true);
+            let updatedLikedByList = post.comments.find(comment => comment._id === event.target.id).liked_by.concat(getLoggedInUser());
+            const response = await fetch(`https://blog-production-10b2.up.railway.app/comments/${event.target.id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({ 
+                    content: post.comments.find(comment => comment._id === event.target.id).content,
+                    liked_by: updatedLikedByList,
+                }),
+            });
+            if(response.ok) {
+                event.target.style.fontVariationSettings = `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Filled thumbs up = currently liked
+                setShowErrorPopup(false);
+                fetchPost();
+            } else {
+                const result = await response.json();
+                let errorText = "";
+                if(result.errors) {
+                    for(let i = 0; i < result.errors.length; i++) {
+                        errorText += (result.errors[i].msg + " "); // If API responds with an array of messages, concatenate each array element to errorText
+                    }
+                } else {
+                    errorText = result.error;
+                }
+                setErrorMessage(errorText);
+                setShowErrorPopup(true);
+            }
         }
     }
 
