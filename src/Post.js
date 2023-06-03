@@ -32,7 +32,6 @@ export function Post() {
             setErrorMessage(result.error);
             setShowErrorPopup(true);
         }
-        console.log(post);
     }
 
     function formatDate(dateString) {
