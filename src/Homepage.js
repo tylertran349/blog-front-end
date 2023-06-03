@@ -49,10 +49,7 @@ export function Homepage() {
         }
     }
 
-    console.log(posts);
-
     async function likePostHandler(event) {
-        console.log(posts);
         setShowErrorPopup(false);
         if(posts.find(post => post._id === event.target.id).liked_by.some(user => user._id === getLoggedInUser()._id)) { // If post is already liked by user
             let updatedLikedByList = posts.find(post => post._id === event.target.id).liked_by.filter(user => user._id !== getLoggedInUser()._id);
@@ -116,7 +113,6 @@ export function Homepage() {
         }
     }
 
-    // TODO: Rewrite to remove if/else statement and clean up logic
     return (
         <div id="content">
             <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
