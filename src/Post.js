@@ -96,7 +96,6 @@ export function Post() {
             });
             
             if(response.ok) {
-                document.querySelector('#post-like-button').style.fontVariationSettings = `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Unfilled thumbs up = not currently liked
                 setShowErrorPopup(false);
                 fetchPost();
             } else {
@@ -125,7 +124,6 @@ export function Post() {
                 }),
             });
             if(response.ok) {
-                document.querySelector('#post-like-button').style.fontVariationSettings = `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Filled thumbs up = currently liked
                 setShowErrorPopup(false);
                 fetchPost();
             } else {
@@ -200,7 +198,6 @@ export function Post() {
                 }),
             });
             if(response.ok) {
-                event.target.style.fontVariationSettings = `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Filled thumbs up = currently liked
                 setShowErrorPopup(false);
                 fetchPost();
             } else {
@@ -230,7 +227,6 @@ export function Post() {
                 }),
             });
             if(response.ok) {
-                event.target.style.fontVariationSettings = `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Filled thumbs up = currently liked
                 setShowErrorPopup(false);
                 fetchPost();
             } else {
@@ -273,7 +269,7 @@ export function Post() {
                 <span id="post-content">{post.content}</span>
                 <span>Posted by <a href={`/users/${post.user._id}`} id="user-link">{post.user.username}</a> on {formatDate(post.date)}</span>
                 <div id="post-like-counter">
-                    {(localStorage.getItem("token") !== null) && (<button id="post-like-button" type="button" onClick={() => likePostHandler()} className="material-symbols-outlined">thumb_up</button>)}
+                    {(localStorage.getItem("token") !== null) && (<button id="post-like-button" type="button" onClick={() => likePostHandler()} className="material-symbols-outlined" style={{fontVariationSettings: (post.liked_by.some(user => user._id === getLoggedInUser()._id)) ? '"FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48' : '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48'}}>thumb_up</button>)}
                     {(localStorage.getItem("token") === null) && (<span id="post-like-button" className="material-symbols-outlined">thumb_up</span>)}
                     {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
                 </div>
@@ -299,7 +295,7 @@ export function Post() {
                         {comment && (<span>{comment.content}</span>)}
                         <span>Posted by <a href={`/users/${comment.user._id}`} id="user-link">{comment.user.username}</a> on {formatDate(comment.date)}</span>
                         <div id="comment-like-counter">
-                            {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likeCommentHandler} id={comment._id} className="material-symbols-outlined">thumb_up</button>)}
+                            {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likeCommentHandler} id={comment._id} className="material-symbols-outlined" style={{fontVariationSettings: (comment.liked_by.some(user => user._id === getLoggedInUser()._id)) ? '"FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48' : '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48'}}>thumb_up</button>)}
                             {(localStorage.getItem("token") === null) && (<span id={comment._id} className="material-symbols-outlined">thumb_up</span>)}
                             {!comment.liked_by ? (<span>0</span>) : (<span>{comment.liked_by.length}</span>)}
                         </div>
