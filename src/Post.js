@@ -15,6 +15,7 @@ export function Post() {
     const [showErrorPopup, setShowErrorPopup] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [loadingStatus, setLoadingStatus] = useState("true"); // Set to true of API request to fetch blog post is not done yet, false otherwise
+    const [filterCommentsOption, setFilterCommentsOption] = useState("Most liked");
 
     useEffect(() => {
         fetchPost();
@@ -289,7 +290,91 @@ export function Post() {
                     {post.comments.length === 0 && (<span>There are no comments.</span>)}
                 </div>
             </div>)}
-            {!loadingStatus && (post.comments.slice().reverse().map((comment) => {
+            {(filterCommentsOption === "Most recent") && !loadingStatus && (post.comments.slice().reverse().map((comment) => { // Sort by most recent
+                return (
+                    <div id="comment">
+                        {comment && (<span>{comment.content}</span>)}
+                        <span>Posted by <a href={`/users/${comment.user._id}`} id="user-link">{comment.user.username}</a> on {formatDate(comment.date)}</span>
+                        <div id="comment-like-counter">
+                            {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likeCommentHandler} id={comment._id} className="material-symbols-outlined" style={{fontVariationSettings: (comment.liked_by.some(user => user._id === getLoggedInUser()._id)) ? '"FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48' : '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48'}}>thumb_up</button>)}
+                            {(localStorage.getItem("token") === null) && (<span id={comment._id} className="material-symbols-outlined">thumb_up</span>)}
+                            {!comment.liked_by ? (<span>0</span>) : (<span>{comment.liked_by.length}</span>)}
+                        </div>
+                        <div id="modify-comment-actions">
+                            {(comment.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={() => {window.location.href=`/comments/${comment._id}/edit`}} className="material-symbols-outlined" id="edit-comment-button">edit</button>)}
+                            {(comment.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button" className="material-symbols-outlined">delete</button>)}
+                        </div>
+                    </div>
+                )
+            }))}
+            {(filterCommentsOption === "Oldest") && !loadingStatus && (post.comments.slice().map((comment) => { // Sort by oldest
+                return (
+                    <div id="comment">
+                        {comment && (<span>{comment.content}</span>)}
+                        <span>Posted by <a href={`/users/${comment.user._id}`} id="user-link">{comment.user.username}</a> on {formatDate(comment.date)}</span>
+                        <div id="comment-like-counter">
+                            {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likeCommentHandler} id={comment._id} className="material-symbols-outlined" style={{fontVariationSettings: (comment.liked_by.some(user => user._id === getLoggedInUser()._id)) ? '"FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48' : '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48'}}>thumb_up</button>)}
+                            {(localStorage.getItem("token") === null) && (<span id={comment._id} className="material-symbols-outlined">thumb_up</span>)}
+                            {!comment.liked_by ? (<span>0</span>) : (<span>{comment.liked_by.length}</span>)}
+                        </div>
+                        <div id="modify-comment-actions">
+                            {(comment.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={() => {window.location.href=`/comments/${comment._id}/edit`}} className="material-symbols-outlined" id="edit-comment-button">edit</button>)}
+                            {(comment.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button" className="material-symbols-outlined">delete</button>)}
+                        </div>
+                    </div>
+                )
+            }))}
+            {(filterCommentsOption === "Most liked") && !loadingStatus && (post.comments.slice().sort((a, b) => {
+                const aLikes = a.liked_by ? a.liked_by.length : 0;
+                const bLikes = b.liked_by ? b.liked_by.length : 0;
+                return bLikes - aLikes; 
+            }).map((comment) => { // Sort by most liked
+                return (
+                    <div id="comment">
+                        {comment && (<span>{comment.content}</span>)}
+                        <span>Posted by <a href={`/users/${comment.user._id}`} id="user-link">{comment.user.username}</a> on {formatDate(comment.date)}</span>
+                        <div id="comment-like-counter">
+                            {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likeCommentHandler} id={comment._id} className="material-symbols-outlined" style={{fontVariationSettings: (comment.liked_by.some(user => user._id === getLoggedInUser()._id)) ? '"FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48' : '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48'}}>thumb_up</button>)}
+                            {(localStorage.getItem("token") === null) && (<span id={comment._id} className="material-symbols-outlined">thumb_up</span>)}
+                            {!comment.liked_by ? (<span>0</span>) : (<span>{comment.liked_by.length}</span>)}
+                        </div>
+                        <div id="modify-comment-actions">
+                            {(comment.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={() => {window.location.href=`/comments/${comment._id}/edit`}} className="material-symbols-outlined" id="edit-comment-button">edit</button>)}
+                            {(comment.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button" className="material-symbols-outlined">delete</button>)}
+                        </div>
+                    </div>
+                )
+            }))}
+            {(filterCommentsOption === "Oldest") && !loadingStatus && (post.comments.slice().sort((a, b) => {
+                const titleA = a.title.toLowerCase();
+                const titleB = b.title.toLowerCase();
+                if (titleA < titleB) return -1;
+                if (titleA > titleB) return 1;
+                return 0;
+            }).map((comment) => { // Sort by alphabetical order (A to Z)
+                return (
+                    <div id="comment">
+                        {comment && (<span>{comment.content}</span>)}
+                        <span>Posted by <a href={`/users/${comment.user._id}`} id="user-link">{comment.user.username}</a> on {formatDate(comment.date)}</span>
+                        <div id="comment-like-counter">
+                            {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likeCommentHandler} id={comment._id} className="material-symbols-outlined" style={{fontVariationSettings: (comment.liked_by.some(user => user._id === getLoggedInUser()._id)) ? '"FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48' : '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48'}}>thumb_up</button>)}
+                            {(localStorage.getItem("token") === null) && (<span id={comment._id} className="material-symbols-outlined">thumb_up</span>)}
+                            {!comment.liked_by ? (<span>0</span>) : (<span>{comment.liked_by.length}</span>)}
+                        </div>
+                        <div id="modify-comment-actions">
+                            {(comment.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={() => {window.location.href=`/comments/${comment._id}/edit`}} className="material-symbols-outlined" id="edit-comment-button">edit</button>)}
+                            {(comment.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={deleteCommentHandler} id={comment._id} type="button" className="material-symbols-outlined">delete</button>)}
+                        </div>
+                    </div>
+                )
+            }))}
+            {(filterCommentsOption === "Oldest") && !loadingStatus && (post.comments.slice().sort((a, b) => {
+                const titleA = a.title.toLowerCase();
+                const titleB = b.title.toLowerCase();
+                if (titleA > titleB) return -1;
+                if (titleA < titleB) return 1;
+                return 0;
+            }).map((comment) => { // Sort by reverse alphabetical order (Z to A)
                 return (
                     <div id="comment">
                         {comment && (<span>{comment.content}</span>)}
