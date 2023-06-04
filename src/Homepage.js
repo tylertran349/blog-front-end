@@ -10,6 +10,7 @@ export function Homepage() {
     const [errorMessage, setErrorMessage] = useState("");
     const [showDeletePostConfirmation, setShowDeletePostConfirmation] = useState(false);
     const [postToBeDeleted, setPostToBeDeleted] = useState("");
+    const [filterPostsOption, setFilterPostsOption] = useState("Most liked");
 
     useEffect(() => {
         fetchPosts(); // Get posts by making API call
@@ -153,7 +154,112 @@ export function Homepage() {
             {showDeletePostConfirmation && (<DeleteConfirmation type="post" onConfirm={deletePost} onCancel={() => setShowDeletePostConfirmation(false)} />)}
             {(localStorage.getItem("token") !== null) && (<a href={"/new-post"}><button id="new-post-button">Create a New Post</button></a>)}
             {posts.length === 0 && (<span>There are no blog posts.</span>)}
-            {posts.slice().reverse().map((post) => {
+            
+            {filterPostsOption === "Most recent" && posts.slice().reverse().map((post) => { // Sort by most recent
+                if(post.published || (getLoggedInUser() && (getLoggedInUser()?._id === post.user._id))) { // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
+                    return (
+                        <div id="post">
+                            <a href={`/posts/${post._id}`} id="title">{post.published ? post.title : `${post.title} (UNPUBLISHED)`}</a> {/* Add "(UNPUBLISHED)" at end of post title if post is unpublished */}
+                            <span id="post-content">{post.content}</span>
+                            <span>Posted by <a href={`/users/${post.user._id}`} id="user-link">{post.user.username}</a> on {formatDate(post.date)}</span>
+                            <div id="post-like-counter">
+                                {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likePostHandler} id={post._id} className="material-symbols-outlined">thumb_up</button>)}
+                                {(localStorage.getItem("token") === null) && (<span id={post._id} className="material-symbols-outlined">thumb_up</span>)}
+                                {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
+                            </div>
+                            <div id="modify-post-actions">
+                                {(post.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${post._id}/edit`}} className="material-symbols-outlined" id="edit-post-button">edit</button>)}
+                                {(post.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={deletePostHandler} id={post._id} type="button" className="material-symbols-outlined">delete</button>)}
+                            </div>
+                        </div>
+                    );
+                } else {
+                    return null;
+                }
+            })}
+            {filterPostsOption === "Oldest" && posts.slice().map((post) => { // Sort by oldest
+                if(post.published || (getLoggedInUser() && (getLoggedInUser()?._id === post.user._id))) { // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
+                    return (
+                        <div id="post">
+                            <a href={`/posts/${post._id}`} id="title">{post.published ? post.title : `${post.title} (UNPUBLISHED)`}</a> {/* Add "(UNPUBLISHED)" at end of post title if post is unpublished */}
+                            <span id="post-content">{post.content}</span>
+                            <span>Posted by <a href={`/users/${post.user._id}`} id="user-link">{post.user.username}</a> on {formatDate(post.date)}</span>
+                            <div id="post-like-counter">
+                                {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likePostHandler} id={post._id} className="material-symbols-outlined">thumb_up</button>)}
+                                {(localStorage.getItem("token") === null) && (<span id={post._id} className="material-symbols-outlined">thumb_up</span>)}
+                                {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
+                            </div>
+                            <div id="modify-post-actions">
+                                {(post.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${post._id}/edit`}} className="material-symbols-outlined" id="edit-post-button">edit</button>)}
+                                {(post.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={deletePostHandler} id={post._id} type="button" className="material-symbols-outlined">delete</button>)}
+                            </div>
+                        </div>
+                    );
+                } else {
+                    return null;
+                }
+            })}
+            {filterPostsOption === "Most liked" && posts.slice().sort((a, b) => {
+                const aLikes = a.liked_by ? a.liked_by.length : 0;
+                const bLikes = b.liked_by ? b.liked_by.length : 0;
+                return bLikes - aLikes; // Sort in descending order of likes
+            }).map((post) => { // Sort by most liked
+                if(post.published || (getLoggedInUser() && (getLoggedInUser()?._id === post.user._id))) { // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
+                    return (
+                        <div id="post">
+                            <a href={`/posts/${post._id}`} id="title">{post.published ? post.title : `${post.title} (UNPUBLISHED)`}</a> {/* Add "(UNPUBLISHED)" at end of post title if post is unpublished */}
+                            <span id="post-content">{post.content}</span>
+                            <span>Posted by <a href={`/users/${post.user._id}`} id="user-link">{post.user.username}</a> on {formatDate(post.date)}</span>
+                            <div id="post-like-counter">
+                                {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likePostHandler} id={post._id} className="material-symbols-outlined">thumb_up</button>)}
+                                {(localStorage.getItem("token") === null) && (<span id={post._id} className="material-symbols-outlined">thumb_up</span>)}
+                                {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
+                            </div>
+                            <div id="modify-post-actions">
+                                {(post.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${post._id}/edit`}} className="material-symbols-outlined" id="edit-post-button">edit</button>)}
+                                {(post.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={deletePostHandler} id={post._id} type="button" className="material-symbols-outlined">delete</button>)}
+                            </div>
+                        </div>
+                    );
+                } else {
+                    return null;
+                }
+            })}
+            {filterPostsOption === "Alphabetical" && posts.slice().sort((a, b) => {
+                const titleA = a.title.toLowerCase();
+                const titleB = b.title.toLowerCase();
+                if (titleA < titleB) return -1;
+                if (titleA > titleB) return 1;
+                return 0;
+            }).map((post) => { // Sort by alphabetical order
+                if(post.published || (getLoggedInUser() && (getLoggedInUser()?._id === post.user._id))) { // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
+                    return (
+                        <div id="post">
+                            <a href={`/posts/${post._id}`} id="title">{post.published ? post.title : `${post.title} (UNPUBLISHED)`}</a> {/* Add "(UNPUBLISHED)" at end of post title if post is unpublished */}
+                            <span id="post-content">{post.content}</span>
+                            <span>Posted by <a href={`/users/${post.user._id}`} id="user-link">{post.user.username}</a> on {formatDate(post.date)}</span>
+                            <div id="post-like-counter">
+                                {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likePostHandler} id={post._id} className="material-symbols-outlined">thumb_up</button>)}
+                                {(localStorage.getItem("token") === null) && (<span id={post._id} className="material-symbols-outlined">thumb_up</span>)}
+                                {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
+                            </div>
+                            <div id="modify-post-actions">
+                                {(post.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${post._id}/edit`}} className="material-symbols-outlined" id="edit-post-button">edit</button>)}
+                                {(post.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={deletePostHandler} id={post._id} type="button" className="material-symbols-outlined">delete</button>)}
+                            </div>
+                        </div>
+                    );
+                } else {
+                    return null;
+                }
+            })}
+            {filterPostsOption === "Reverse alphabetical" && posts.slice().sort((a, b) => {
+                const titleA = a.title.toLowerCase();
+                const titleB = b.title.toLowerCase();
+                if (titleA > titleB) return -1;
+                if (titleA < titleB) return 1;
+                return 0;
+            }).map((post) => { // Sort by reverse alphabetical order
                 if(post.published || (getLoggedInUser() && (getLoggedInUser()?._id === post.user._id))) { // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
                     return (
                         <div id="post">
