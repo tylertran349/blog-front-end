@@ -10,7 +10,7 @@ export function Homepage() {
     const [errorMessage, setErrorMessage] = useState("");
     const [showDeletePostConfirmation, setShowDeletePostConfirmation] = useState(false);
     const [postToBeDeleted, setPostToBeDeleted] = useState("");
-    const [filterPostsOption, setFilterPostsOption] = useState("Most liked");
+    const [filterPostsOption, setFilterPostsOption] = useState("Most recent");
 
     useEffect(() => {
         fetchPosts(); // Get posts by making API call
@@ -72,9 +72,7 @@ export function Homepage() {
                     liked_by: updatedLikedByList,
                 }),
             });
-            
             if(response.ok) {
-                event.target.style.fontVariationSettings = `'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Unfilled thumbs up = not currently liked
                 setShowErrorPopup(false);
                 fetchPosts();
             } else {
@@ -103,7 +101,6 @@ export function Homepage() {
                 }),
             });
             if(response.ok) {
-                event.target.style.fontVariationSettings = `'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48`; // Filled thumbs up = currently liked
                 setShowErrorPopup(false);
                 fetchPosts();
             } else {
@@ -163,7 +160,7 @@ export function Homepage() {
                             <span id="post-content">{post.content}</span>
                             <span>Posted by <a href={`/users/${post.user._id}`} id="user-link">{post.user.username}</a> on {formatDate(post.date)}</span>
                             <div id="post-like-counter">
-                                {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likePostHandler} id={post._id} className="material-symbols-outlined">thumb_up</button>)}
+                                {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likePostHandler} id={post._id} className="material-symbols-outlined" style={{fontVariationSettings: (post.liked_by.some(user => user._id === getLoggedInUser()._id)) ? '"FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48' : '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48'}}>thumb_up</button>)}
                                 {(localStorage.getItem("token") === null) && (<span id={post._id} className="material-symbols-outlined">thumb_up</span>)}
                                 {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
                             </div>
@@ -177,6 +174,7 @@ export function Homepage() {
                     return null;
                 }
             })}
+
             {filterPostsOption === "Oldest" && posts.slice().map((post) => { // Sort by oldest
                 if(post.published || (getLoggedInUser() && (getLoggedInUser()?._id === post.user._id))) { // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
                     return (
@@ -185,7 +183,7 @@ export function Homepage() {
                             <span id="post-content">{post.content}</span>
                             <span>Posted by <a href={`/users/${post.user._id}`} id="user-link">{post.user.username}</a> on {formatDate(post.date)}</span>
                             <div id="post-like-counter">
-                                {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likePostHandler} id={post._id} className="material-symbols-outlined">thumb_up</button>)}
+                                {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likePostHandler} id={post._id} className="material-symbols-outlined" style={{fontVariationSettings: (post.liked_by.some(user => user._id === getLoggedInUser()._id)) ? '"FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48' : '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48'}}>thumb_up</button>)}
                                 {(localStorage.getItem("token") === null) && (<span id={post._id} className="material-symbols-outlined">thumb_up</span>)}
                                 {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
                             </div>
@@ -199,6 +197,7 @@ export function Homepage() {
                     return null;
                 }
             })}
+
             {filterPostsOption === "Most liked" && posts.slice().sort((a, b) => {
                 const aLikes = a.liked_by ? a.liked_by.length : 0;
                 const bLikes = b.liked_by ? b.liked_by.length : 0;
@@ -211,7 +210,7 @@ export function Homepage() {
                             <span id="post-content">{post.content}</span>
                             <span>Posted by <a href={`/users/${post.user._id}`} id="user-link">{post.user.username}</a> on {formatDate(post.date)}</span>
                             <div id="post-like-counter">
-                                {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likePostHandler} id={post._id} className="material-symbols-outlined">thumb_up</button>)}
+                                {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likePostHandler} id={post._id} className="material-symbols-outlined" style={{fontVariationSettings: (post.liked_by.some(user => user._id === getLoggedInUser()._id)) ? '"FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48' : '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48'}}>thumb_up</button>)}
                                 {(localStorage.getItem("token") === null) && (<span id={post._id} className="material-symbols-outlined">thumb_up</span>)}
                                 {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
                             </div>
@@ -225,6 +224,7 @@ export function Homepage() {
                     return null;
                 }
             })}
+
             {filterPostsOption === "Alphabetical" && posts.slice().sort((a, b) => {
                 const titleA = a.title.toLowerCase();
                 const titleB = b.title.toLowerCase();
@@ -239,7 +239,7 @@ export function Homepage() {
                             <span id="post-content">{post.content}</span>
                             <span>Posted by <a href={`/users/${post.user._id}`} id="user-link">{post.user.username}</a> on {formatDate(post.date)}</span>
                             <div id="post-like-counter">
-                                {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likePostHandler} id={post._id} className="material-symbols-outlined">thumb_up</button>)}
+                                {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likePostHandler} id={post._id} className="material-symbols-outlined" style={{fontVariationSettings: (post.liked_by.some(user => user._id === getLoggedInUser()._id)) ? '"FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48' : '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48'}}>thumb_up</button>)}
                                 {(localStorage.getItem("token") === null) && (<span id={post._id} className="material-symbols-outlined">thumb_up</span>)}
                                 {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
                             </div>
@@ -253,6 +253,7 @@ export function Homepage() {
                     return null;
                 }
             })}
+            
             {filterPostsOption === "Reverse alphabetical" && posts.slice().sort((a, b) => {
                 const titleA = a.title.toLowerCase();
                 const titleB = b.title.toLowerCase();
@@ -267,7 +268,7 @@ export function Homepage() {
                             <span id="post-content">{post.content}</span>
                             <span>Posted by <a href={`/users/${post.user._id}`} id="user-link">{post.user.username}</a> on {formatDate(post.date)}</span>
                             <div id="post-like-counter">
-                                {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likePostHandler} id={post._id} className="material-symbols-outlined">thumb_up</button>)}
+                                {(localStorage.getItem("token") !== null) && (<button type="button" onClick={likePostHandler} id={post._id} className="material-symbols-outlined" style={{fontVariationSettings: (post.liked_by.some(user => user._id === getLoggedInUser()._id)) ? '"FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48' : '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48'}}>thumb_up</button>)}
                                 {(localStorage.getItem("token") === null) && (<span id={post._id} className="material-symbols-outlined">thumb_up</span>)}
                                 {!post.liked_by ? (<span>0</span>) : (<span>{post.liked_by.length}</span>)}
                             </div>
