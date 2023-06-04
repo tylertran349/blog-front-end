@@ -109,7 +109,7 @@ div[id="content"] {
     color: white;
 }
 
-/* Mateiral icon styling */
+/* Material icon styling */
 .material-symbols-outlined {
     font-variation-settings:
     'FILL' 0,
@@ -119,17 +119,6 @@ div[id="content"] {
     background: transparent;
     color: var(--accent-color);
     padding: 0;
-}
-
-/* Mateiral icon styling (filled) */
-.material-symbols-outlined-fill {
-    font-variation-settings:
-    'FILL' 1,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 48;
-    background: transparent;
-    color: var(--accent-color);
 }
 
 button {
