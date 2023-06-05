@@ -15,7 +15,7 @@ export function Post() {
     const [showErrorPopup, setShowErrorPopup] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [loadingStatus, setLoadingStatus] = useState("true"); // Set to true of API request to fetch blog post is not done yet, false otherwise
-    const [filterCommentsOption, setFilterCommentsOption] = useState("Most liked");
+    const [filterCommentsOption, setFilterCommentsOption] = useState("Most recent");
 
     useEffect(() => {
         fetchPost();
@@ -259,6 +259,34 @@ export function Post() {
         window.location.href = "/"; // Redirect user back to home page after they delete the post
     }
 
+    function toggleDropdown() {
+        var dropdownOptions = document.getElementById("dropdown-options");
+        var dropbtn = document.getElementById("dropbtn");
+      
+        dropdownOptions.classList.toggle("show");
+        
+        if (dropdownOptions.classList.contains("show")) {
+            dropbtn.style.borderRadius = '0.5rem 0.5rem 0 0'; // Only make top left and top right corners rounded
+        } else {
+            dropbtn.style.borderRadius = '0.5rem'; // Make all corners rounded
+        }
+    }
+      
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event) {
+        if (!event.target.matches('#dropbtn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if(openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+            document.getElementById("dropbtn").style.borderRadius = '0.5rem 0.5rem 0.5rem 0.5rem';
+        }
+    }
+
     return (
         <div id="content">
             <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
@@ -290,7 +318,17 @@ export function Post() {
                     {post.comments.length === 0 && (<span>There are no comments.</span>)}
                 </div>
             </div>)}
-            {(filterCommentsOption === "Most recent") && !loadingStatus && (post.comments.slice().reverse().map((comment) => { // Sort by most recent
+            {!loadingStatus && (<div id="dropdown">
+                <button onClick={() => toggleDropdown()} id="dropbtn">Sort Comments</button>
+                <div id="dropdown-options" class="dropdown-content">
+                    <a onClick={() => setFilterCommentsOption("Most recent")}>Most recent</a>
+                    <a onClick={() => setFilterCommentsOption("Oldest")}>Oldest</a>
+                    <a onClick={() => setFilterCommentsOption("Most liked")}>Most liked</a>
+                    <a onClick={() => setFilterCommentsOption("Alphabetical")}>A-Z</a>
+                    <a onClick={() => setFilterCommentsOption("Reverse alphabetical")}>Z-A</a>
+                </div>
+            </div>)}
+            {!loadingStatus && (filterCommentsOption === "Most recent") && (post.comments.slice().reverse().map((comment) => { // Sort by most recent
                 return (
                     <div id="comment">
                         {comment && (<span>{comment.content}</span>)}
@@ -307,7 +345,7 @@ export function Post() {
                     </div>
                 )
             }))}
-            {(filterCommentsOption === "Oldest") && !loadingStatus && (post.comments.slice().map((comment) => { // Sort by oldest
+            {!loadingStatus && (filterCommentsOption === "Oldest") && (post.comments.slice().map((comment) => { // Sort by oldest
                 return (
                     <div id="comment">
                         {comment && (<span>{comment.content}</span>)}
@@ -324,7 +362,7 @@ export function Post() {
                     </div>
                 )
             }))}
-            {(filterCommentsOption === "Most liked") && !loadingStatus && (post.comments.slice().sort((a, b) => {
+            {!loadingStatus && (filterCommentsOption === "Most liked") && (post.comments.slice().sort((a, b) => {
                 const aLikes = a.liked_by ? a.liked_by.length : 0;
                 const bLikes = b.liked_by ? b.liked_by.length : 0;
                 return bLikes - aLikes; 
@@ -345,7 +383,7 @@ export function Post() {
                     </div>
                 )
             }))}
-            {(filterCommentsOption === "Oldest") && !loadingStatus && (post.comments.slice().sort((a, b) => {
+            {!loadingStatus && (filterCommentsOption === "Oldest") && (post.comments.slice().sort((a, b) => {
                 const titleA = a.title.toLowerCase();
                 const titleB = b.title.toLowerCase();
                 if (titleA < titleB) return -1;
@@ -368,7 +406,7 @@ export function Post() {
                     </div>
                 )
             }))}
-            {(filterCommentsOption === "Oldest") && !loadingStatus && (post.comments.slice().sort((a, b) => {
+            {!loadingStatus && (filterCommentsOption === "Oldest") && (post.comments.slice().sort((a, b) => {
                 const titleA = a.title.toLowerCase();
                 const titleB = b.title.toLowerCase();
                 if (titleA > titleB) return -1;
