@@ -177,9 +177,9 @@ export function Homepage() {
             {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
             {showDeletePostConfirmation && (<DeleteConfirmation type="post" onConfirm={deletePost} onCancel={() => setShowDeletePostConfirmation(false)} />)}
             <span id="title">Posts</span>
-            {posts.filter(post => post.published).length !== 0 && localStorage.getItem("token") !== null (<div id="posts-actions">
+            {posts.filter(post => post.published).length !== 0 && localStorage.getItem("token") !== null && (<div id="posts-actions">
                 {posts.filter(post => post.published).length !== 0 && (<div id="dropdown">
-                    <button onClick={() => toggleDropdown()} id="dropbtn" style="">Sort posts</button>
+                    <button onClick={() => toggleDropdown()} id="dropbtn">Sort posts</button>
                     <div id="dropdown-options" className="dropdown-content">
                         <a onClick={() => setFilterPostsOption("Most recent")}>Most recent</a>
                         <a onClick={() => setFilterPostsOption("Oldest")}>Oldest</a>
