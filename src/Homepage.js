@@ -157,7 +157,7 @@ export function Homepage() {
         }
     }
       
-      // Close the dropdown if the user clicks outside of it
+    // Close the dropdown if the user clicks outside of it
     window.onclick = function(event) {
         if (!event.target.matches('#dropbtn')) {
             var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -180,7 +180,7 @@ export function Homepage() {
             <span id="title">Posts</span>
             <div id="posts-actions">
                 <div id="dropdown">
-                    <button onClick={toggleDropdown} id="dropbtn">Sort by</button>
+                    <button onClick={toggleDropdown} id="dropbtn">Sort Posts</button>
                     <div id="dropdown-options" class="dropdown-content">
                         <a onClick={() => setFilterPostsOption("Most recent")}>Most recent</a>
                         <a onClick={() => setFilterPostsOption("Oldest")}>Oldest</a>
