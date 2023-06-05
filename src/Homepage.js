@@ -150,6 +150,14 @@ export function Homepage() {
             {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
             {showDeletePostConfirmation && (<DeleteConfirmation type="post" onConfirm={deletePost} onCancel={() => setShowDeletePostConfirmation(false)} />)}
             {(localStorage.getItem("token") !== null) && (<a href={"/new-post"}><button id="new-post-button">Create a New Post</button></a>)}
+            <select id="dropdown-menu" onChange={(e) => setFilterPostsOption(e.target.value)}>
+                <option id="dropdown-option" value="Most recent">Most recent</option>
+                <option id="dropdown-option" value="Oldest">Oldest</option>
+                <option id="dropdown-option" value="Most liked">Most liked</option>
+                <option id="dropdown-option" value="Alphabetical">A-Z</option>
+                <option id="dropdown-option" value="Reverse alphabetical">Z-A</option>
+            </select>
+
             {posts.length === 0 && (<span>There are no blog posts.</span>)}
             
             {filterPostsOption === "Most recent" && posts.slice().reverse().map((post) => { // Sort by most recent
@@ -201,7 +209,7 @@ export function Homepage() {
             {filterPostsOption === "Most liked" && posts.slice().sort((a, b) => {
                 const aLikes = a.liked_by ? a.liked_by.length : 0;
                 const bLikes = b.liked_by ? b.liked_by.length : 0;
-                return bLikes - aLikes; // Sort in descending order of likes
+                return bLikes - aLikes;
             }).map((post) => { // Sort by most liked
                 if(post.published || (getLoggedInUser() && (getLoggedInUser()?._id === post.user._id))) { // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
                     return (
@@ -231,7 +239,7 @@ export function Homepage() {
                 if (titleA < titleB) return -1;
                 if (titleA > titleB) return 1;
                 return 0;
-            }).map((post) => { // Sort by alphabetical order
+            }).map((post) => { // Sort by alphabetical order (A to Z)
                 if(post.published || (getLoggedInUser() && (getLoggedInUser()?._id === post.user._id))) { // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
                     return (
                         <div id="post">
@@ -260,7 +268,7 @@ export function Homepage() {
                 if (titleA > titleB) return -1;
                 if (titleA < titleB) return 1;
                 return 0;
-            }).map((post) => { // Sort by reverse alphabetical order
+            }).map((post) => { // Sort by reverse alphabetical order (Z to A)
                 if(post.published || (getLoggedInUser() && (getLoggedInUser()?._id === post.user._id))) { // Also show all unpublished posts if logged in user is the author of the unpublished post(s)
                     return (
                         <div id="post">
