@@ -180,7 +180,7 @@ export function Homepage() {
             <div id="posts-actions">
                 <div id="dropdown">
                     <button onClick={() => toggleDropdown()} id="dropbtn">Sort Posts</button>
-                    <div id="dropdown-options" class="dropdown-content">
+                    <div id="dropdown-options" className="dropdown-content">
                         <a onClick={() => setFilterPostsOption("Most recent")}>Most recent</a>
                         <a onClick={() => setFilterPostsOption("Oldest")}>Oldest</a>
                         <a onClick={() => setFilterPostsOption("Most liked")}>Most liked</a>

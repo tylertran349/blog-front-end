@@ -319,7 +319,7 @@ export function Post() {
             </div>)}
             {!loadingStatus && (<div id="dropdown">
                 <button onClick={() => toggleDropdown()} id="dropbtn">Sort Comments</button>
-                <div id="dropdown-options" class="dropdown-content">
+                <div id="dropdown-options" className="dropdown-content">
                     <a onClick={() => setFilterCommentsOption("Most recent")}>Most recent</a>
                     <a onClick={() => setFilterCommentsOption("Oldest")}>Oldest</a>
                     <a onClick={() => setFilterCommentsOption("Most liked")}>Most liked</a>
