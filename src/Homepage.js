@@ -144,19 +144,54 @@ export function Homepage() {
         }
     }
 
+    function toggleDropdown() {
+        var dropdownOptions = document.getElementById("dropdown-options");
+        var dropbtn = document.getElementById("dropbtn");
+      
+        dropdownOptions.classList.toggle("show");
+        
+        if (dropdownOptions.classList.contains("show")) {
+            dropbtn.style.borderRadius = '0.5rem 0.5rem 0 0'; // Only make top left and top right corners rounded
+        } else {
+            dropbtn.style.borderRadius = '0.5rem'; // Make all corners rounded
+        }
+    }
+      
+      // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event) {
+        if (!event.target.matches('#dropbtn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if(openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+            document.getElementById("dropbtn").style.borderRadius = '0.5rem 0.5rem 0.5rem 0.5rem';
+        }
+    }
+
     return (
         <div id="content">
             <NavBar loggedInUserId={getLoggedInUser() ? getLoggedInUser()._id : null} />
             {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
             {showDeletePostConfirmation && (<DeleteConfirmation type="post" onConfirm={deletePost} onCancel={() => setShowDeletePostConfirmation(false)} />)}
             {(localStorage.getItem("token") !== null) && (<a href={"/new-post"}><button id="new-post-button">Create a New Post</button></a>)}
-            <select id="dropdown-menu" onChange={(e) => setFilterPostsOption(e.target.value)}>
-                <option id="dropdown-option" value="Most recent">Most recent</option>
-                <option id="dropdown-option" value="Oldest">Oldest</option>
-                <option id="dropdown-option" value="Most liked">Most liked</option>
-                <option id="dropdown-option" value="Alphabetical">A-Z</option>
-                <option id="dropdown-option" value="Reverse alphabetical">Z-A</option>
-            </select>
+            <span id="title">Posts</span>
+            <div id="posts-actions">
+                <div id="dropdown">
+                    <button onClick={toggleDropdown} id="dropbtn">Sort by</button>
+                    <div id="dropdown-options" class="dropdown-content">
+                        <a onClick={() => setFilterPostsOption("Most recent")}>Most recent</a>
+                        <a onClick={() => setFilterPostsOption("Oldest")}>Oldest</a>
+                        <a onClick={() => setFilterPostsOption("Most liked")}>Most liked</a>
+                        <a onClick={() => setFilterPostsOption("Alphabetical")}>A-Z</a>
+                        <a onClick={() => setFilterPostsOption("Reverse alphabetical")}>Z-A</a>
+                    </div>
+                </div>
+                {(localStorage.getItem("token") !== null) && (<a href={"/new-post"}><button id="new-post-button">Create a New Post</button></a>)}
+            </div>
 
             {posts.length === 0 && (<span>There are no blog posts.</span>)}
             
