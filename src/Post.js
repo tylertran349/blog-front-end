@@ -293,7 +293,7 @@ export function Post() {
             {showDeletePostConfirmation && (<DeleteConfirmation type="post" onConfirm={deletePost} onCancel={() => setShowDeletePostConfirmation(false)} />)}
             {showDeleteCommentConfirmation && (<DeleteConfirmation type="comment" onConfirm={() => deleteComment(commentToBeDeleted)} onCancel={() => setShowDeleteCommentConfirmation(false)} />)}
             {!loadingStatus && (<div id="post">
-                <span id="title">{post.title}</span>
+                <span id="title">{post.published ? post.title : `${post.title} (UNPUBLISHED)`}</span>
                 <span id="post-content">{post.content}</span>
                 <span>Posted by <a href={`/users/${post.user._id}`} id="user-link">{post.user.username}</a> on {formatDate(post.date)}</span>
                 <div id="post-like-counter">
