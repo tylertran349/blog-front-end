@@ -179,7 +179,7 @@ export function Homepage() {
             <span id="title">Posts</span>
             <div id="posts-actions">
                 <div id="dropdown">
-                    <button onClick={() => toggleDropdown()} id="dropbtn">Sort Posts</button>
+                    <button onClick={() => toggleDropdown()} id="dropbtn">Sort posts</button>
                     <div id="dropdown-options" className="dropdown-content">
                         <a onClick={() => setFilterPostsOption("Most recent")}>Most recent</a>
                         <a onClick={() => setFilterPostsOption("Oldest")}>Oldest</a>
@@ -188,7 +188,7 @@ export function Homepage() {
                         <a onClick={() => setFilterPostsOption("Reverse alphabetical")}>Z-A</a>
                     </div>
                 </div>
-                {(localStorage.getItem("token") !== null) && (<a href={"/new-post"}><button id="new-post-button">Create a New Post</button></a>)}
+                {(localStorage.getItem("token") !== null) && (<a href={"/new-post"}><button id="new-post-button">New post</button></a>)}
             </div>
 
             {posts.length === 0 && (<span>There are no blog posts.</span>)}

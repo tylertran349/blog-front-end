@@ -310,7 +310,7 @@ export function Post() {
                         <label htmlFor="comment-input">Comments</label>
                         <textarea id="comment-input" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></textarea>
                     </div>
-                    <button type="submit">Send Comment</button>
+                    <button type="submit">Comment</button>
                 </form>
                 <div>
                     {(localStorage.getItem("token") === null) && (<span><a href="/login" id="login-link">Login</a> to comment.</span>)}
@@ -318,7 +318,7 @@ export function Post() {
                 </div>
             </div>)}
             {!loadingStatus && (<div id="dropdown">
-                <button onClick={() => toggleDropdown()} id="dropbtn">Sort Comments</button>
+                <button onClick={() => toggleDropdown()} id="dropbtn">Sort comments</button>
                 <div id="dropdown-options" className="dropdown-content">
                     <a onClick={() => setFilterCommentsOption("Most recent")}>Most recent</a>
                     <a onClick={() => setFilterCommentsOption("Oldest")}>Oldest</a>

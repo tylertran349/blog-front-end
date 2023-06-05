@@ -219,11 +219,11 @@ export function Settings() {
                             <label htmlFor="adminPasscode">Enter admin passcode</label>
                             <input id="adminPasscode" type="password" placeholder="Admin passcode" value={adminPasscode} onChange={(e) => setAdminPasscode(e.target.value)}></input>
                         </div>
-                        <button type="submit">Submit Passcode</button>
+                        <button type="submit">Submit passcode</button>
                     </form>
                 )}
             </div>
-            <button id="warning-button" onClick={() => setShowDeleteConfirmation(true)}>Delete Account</button>
+            <button id="warning-button" onClick={() => setShowDeleteConfirmation(true)}>Delete account</button>
         </div>
     );
 }
