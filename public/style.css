@@ -109,15 +109,54 @@ div[id="content"] {
     color: white;
 }
 
-#dropdown-menu {
+#posts-actions {
+    width: 52%;
+    display: flex;
+    justify-content: space-between;
+}
+
+#dropbtn {
     background-color: white;
-    font-size: inherit;
-    font-family: inherit;
+    color: inherit;
     padding: 0.75rem;
-    border-radius: var(--border-radius);
+    font-size: inherit;
     border: none;
+    cursor: pointer;
+    min-width: 12rem;
+    border-radius: 0;
     box-shadow: var(--box-shadow);
-    outline: none;
+    border-radius: 0.5rem;
+}
+
+#dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 12rem;
+    overflow: auto;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px -2px; /* Make box shadow invisible on top */
+    z-index: 1;
+    border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.dropdown-content a {
+    text-align: center;
+    padding: 0.75rem;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a {
+    cursor: pointer;
+}
+
+.show {
+    display: block;
 }
 
 /* Material icon styling */
