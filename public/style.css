@@ -123,7 +123,7 @@ div[id="content"] {
     font-size: inherit;
     border: none;
     cursor: pointer;
-    min-width: 12rem;
+    min-width: 15rem;
     border-radius: 0;
     box-shadow: var(--box-shadow);
     border-radius: 0.5rem;
@@ -138,7 +138,7 @@ div[id="content"] {
     display: none;
     position: absolute;
     background-color: white;
-    min-width: 12rem;
+    min-width: 15rem;
     overflow: auto;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px -2px; /* Make box shadow invisible on top */
     z-index: 1;
