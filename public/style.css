@@ -112,7 +112,8 @@ div[id="content"] {
 #posts-actions {
     width: 52%;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 2rem;
 }
 
 #dropbtn {
