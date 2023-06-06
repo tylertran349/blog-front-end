@@ -281,8 +281,8 @@ export function Post() {
                 if(openDropdown.classList.contains('show')) {
                     openDropdown.classList.remove('show');
                 }
+                document.getElementById("dropbtn").style.borderRadius = '0.5rem 0.5rem 0.5rem 0.5rem';
             }
-            document.getElementById("dropbtn").style.borderRadius = '0.5rem 0.5rem 0.5rem 0.5rem';
         }
     }
 
