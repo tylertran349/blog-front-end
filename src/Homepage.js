@@ -177,8 +177,8 @@ export function Homepage() {
             {showErrorPopup && (<ErrorPopup message={errorMessage} onClick={(e) => setShowErrorPopup(false)} />)}
             {showDeletePostConfirmation && (<DeleteConfirmation type="post" onConfirm={deletePost} onCancel={() => setShowDeletePostConfirmation(false)} />)}
             <span id="title">Posts</span>
-            {posts.filter(post => post.published).length !== 0 && localStorage.getItem("token") !== null && (<div id="posts-actions">
-                {posts.filter(post => post.published).length !== 0 && (<div id="dropdown">
+            <div id="posts-actions">
+                <div id="dropdown">
                     <button onClick={() => toggleDropdown()} id="dropbtn">Sort posts</button>
                     <div id="dropdown-options" className="dropdown-content">
                         <a onClick={() => setFilterPostsOption("Most recent")}>Most recent</a>
@@ -187,9 +187,9 @@ export function Homepage() {
                         <a onClick={() => setFilterPostsOption("Alphabetical")}>A-Z</a>
                         <a onClick={() => setFilterPostsOption("Reverse alphabetical")}>Z-A</a>
                     </div>
-                </div>)}
+                </div>
                 {(localStorage.getItem("token") !== null) && (<a href={"/new-post"}><button id="new-post-button">New post</button></a>)}
-            </div>)}
+            </div>
             {localStorage.getItem("token") !== null && posts.length === 0 && (<span>There are no blog posts.</span>)} {/* Only if the user is logged in and there are no published or unpublished posts at all */}
             {localStorage.getItem("token") === null && posts.filter(post => post.published).length === 0 && (<span>There are no blog posts.</span>)} {/* Only if there are no published posts and the user is NOT logged in */}
             {filterPostsOption === "Most recent" && posts.slice().reverse().map((post) => { // Sort by most recent
