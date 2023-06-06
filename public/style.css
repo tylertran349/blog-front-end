@@ -143,6 +143,8 @@ div[id="content"] {
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px -2px; /* Make box shadow invisible on top */
     z-index: 1;
     border-radius: 0 0 0.5rem 0.5rem;
+    animation: growOutwards 250ms ease-in-out forwards;
+    transform-origin: top center;
 }
 
 .dropdown-content a {
@@ -154,6 +156,18 @@ div[id="content"] {
 
 .dropdown-content a {
     cursor: pointer;
+}
+
+@keyframes growOutwards {
+    0% {
+       transform: scale(0)
+   }
+   80% {
+       transform: scale(1.1)
+   }
+   100% {
+       transform: scale(1)
+   }
 }
 
 .show {
