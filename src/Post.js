@@ -305,18 +305,17 @@ export function Post() {
                     {(post.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button onClick={() => {window.location.href=`/posts/${postId}/edit`}} className="material-symbols-outlined" id="edit-post-button">edit</button>)}
                     {(post.user._id === getLoggedInUser()?._id || getLoggedInUser()?.is_admin === true) && (<button id="delete-post-button" type="button" onClick={() => setShowDeletePostConfirmation(true)} className="material-symbols-outlined">delete</button>)}
                 </div>
+            </div>)}
+            <span id="title">Comments</span>
+            <div id="form-container">
                 <form onSubmit={handleCommentSubmit} id="comment-form">
                     <div id="label-input-pair">
-                        <label htmlFor="comment-input">Comments</label>
                         <textarea id="comment-input" placeholder="Add a comment" value={newComment} onChange={(e) => setNewComment(e.target.value)}></textarea>
                     </div>
                     <button type="submit">Comment</button>
-                </form>
-                <div>
                     {(localStorage.getItem("token") === null) && (<span><a href="/login" id="login-link">Login</a> to comment.</span>)}
-                    {post.comments.length === 0 && (<span>There are no comments.</span>)}
-                </div>
-            </div>)}
+                </form>
+            </div>
             {!loadingStatus && (<div id="dropdown">
                 <button onClick={() => toggleDropdown()} id="dropbtn">Sort comments</button>
                 <div id="dropdown-options" className="dropdown-content">
@@ -327,6 +326,7 @@ export function Post() {
                     <a onClick={() => setFilterCommentsOption("Reverse alphabetical")}>Z-A</a>
                 </div>
             </div>)}
+            {!loadingStatus && post.comments.length === 0 && (<span>There are no comments.</span>)}
             {!loadingStatus && (filterCommentsOption === "Most recent") && (post.comments.slice().reverse().map((comment) => { // Sort by most recent
                 return (
                     <div id="comment">
